@@ -1,6 +1,6 @@
-# React TypeScript Todo App
+# React TypeScript STEM Sims Exercise
 
-This app was created for the STEM Sims Front-end Assessment.
+This app was created for the STEM Sims Front-end Exercise.
 ## Run the App
 
 Install dependencies:
