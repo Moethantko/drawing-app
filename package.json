@@ -38,6 +38,7 @@
   "devDependencies": {
     "@types/node": "^16.9.4",
     "@types/react": "^17.0.22",
-    "@types/react-dom": "^17.0.20"
+    "@types/react-dom": "^17.0.20",
+    "tailwindcss": "^3.3.3"
   }
 }
