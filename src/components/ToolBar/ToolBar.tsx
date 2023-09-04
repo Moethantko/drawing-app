@@ -3,6 +3,9 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Button from '@mui/material/Button';
+import DialogTitle from '@mui/material/DialogTitle';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 
 interface SelectToolProps {
     onSelectTool: (tool: string) => void;
@@ -14,6 +17,7 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
 
     const [tool, setTool] = useState('');
     const [color, setColor] = useState('Red');
+    const [openDialog, setOpenDialog] = useState(false)
 
     const handleToolChange = (e: SelectChangeEvent) => {
         setTool(e.target.value as string);
@@ -24,6 +28,11 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
         setColor(e.target.value as string);
         onSelectColor(e.target.value as string);
     };
+
+    const handleErase = () => {
+        onErase()
+        setOpenDialog(false)
+    }
 
   return (
     <div className='ml-6 mt-4'>
@@ -61,9 +70,31 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
             className='hover:bg-red-100'
             sx={{ p: 2, backgroundColor: 'red' }}
             variant="contained"
-            onClick={onErase}>
+            onClick={() => setOpenDialog(true)}>
             Erase All
         </Button>
+        <Dialog onClose={() => setOpenDialog(false)} open={openDialog}>
+            <DialogTitle>Are you sure you want to erase all drawings?</DialogTitle>
+            <DialogContent>
+            <Button
+                className='hover:bg-red-100'
+                color='error'
+                variant="contained"
+                onClick={() => {
+                    onErase();
+                    setOpenDialog(false);
+                }}>
+                Yes
+            </Button>
+            <Button
+                className='hover:bg-red-100'
+                variant="contained"
+                sx={{ ml:1 }}
+                onClick={() => setOpenDialog(false)}>
+                No
+            </Button>
+            </DialogContent>
+        </Dialog>
     </div>
   )
 }
