@@ -15,7 +15,7 @@ interface Rectagle {
   
 const Canvas = () => {
     const [tool, setTool] = useState("pen");
-    const [color, setColor] = useState("");
+    const [color, setColor] = useState("#FF0000");
 
     const [lines, setLines] = useState<any>([]);
     const [annotations, setAnnotations] = useState<any>([]);
@@ -26,8 +26,6 @@ const Canvas = () => {
       y: 0,
       radius: 0,
     });
-
-    
 
     const isDrawing = useRef(false);
 
@@ -98,8 +96,8 @@ const Canvas = () => {
         } else if (tool === "circle") {
           const { x, y } = e.target.getStage().getPointerPosition();
           const newRadius = Math.sqrt(
-            Math.pow(newCircle.x - x, 2) + Math.pow(newCircle.y - y, 2)
-          );
+            Math.pow(x - newCircle.x, 2) + Math.pow(y - newCircle.y, 2)
+          ) - 100;
 
           setNewCircle({ ...newCircle, radius: newRadius });
         }
@@ -139,12 +137,12 @@ const Canvas = () => {
           onErase={onErase}
          />
         <Stage
+        className='p-4 mx-6 mt-6 shadow-md shadow-gray-600 rounded-lg'
         width={window.innerWidth}
         height={window.innerHeight}
         onMouseDown={handleMouseDown}
         onMousemove={handleMouseMove}
-        onMouseup={handleMouseUp}
-      >
+        onMouseup={handleMouseUp}>
         <Layer>
           {
               lines.map((line: any, i: any) => (

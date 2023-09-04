@@ -12,7 +12,7 @@ interface SelectToolProps {
 
 const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, onErase }: SelectToolProps) => {
 
-    const [tool, setTool] = useState('pen');
+    const [tool, setTool] = useState('');
     const [color, setColor] = useState('Red');
 
     const handleToolChange = (e: SelectChangeEvent) => {
@@ -26,45 +26,44 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
     };
 
   return (
-    <div>
-        <FormControl>
+    <div className='ml-6 mt-4'>
+        <FormControl className='w-32' sx={{ mr: 2 }}>
             <Select
-            defaultValue={tool}
-            value={tool}
-            onChange={handleToolChange}
-            displayEmpty
-            inputProps={{ 'aria-label': 'Without label' }}
+                value={tool}
+                onChange={handleToolChange}
+                displayEmpty
             >
                 <MenuItem disabled value="">
-                    <em>Select Drawing Tool</em>
+                    <em>Tool</em>
                 </MenuItem>
                 <MenuItem value={'pen'}>Pen</MenuItem>
                 <MenuItem value={'rect'}>Rectagle</MenuItem>
                 <MenuItem value={'circle'}>Circle</MenuItem>
                 <MenuItem value={'eraser'}>Eraser</MenuItem>
             </Select>
-      </FormControl>
-      <FormControl>
-         <Select
-            defaultValue={color}
-            value={color}
-            onChange={handleColorChange}
-            inputProps={{ 'aria-label': 'Without label' }}
-            >
-                <MenuItem disabled value="">
-                    <em>Select Color</em>
-                </MenuItem>
-                <MenuItem value={'#FF0000'}>Red</MenuItem>
-                <MenuItem value={'#008000'}>Green</MenuItem>
-                <MenuItem value={'#0000FF'}>Blue</MenuItem>
-                <MenuItem value={'#800080'}>Purple</MenuItem>
-            </Select>
-      </FormControl>
-      <Button
-        variant="contained"
-        onClick={onErase}>
-        Erase All
-      </Button>
+        </FormControl>
+        <FormControl className='w-32' sx={{ mr: 2 }}>
+            <Select
+                value={color}
+                onChange={handleColorChange}
+                displayEmpty
+                >
+                    <MenuItem disabled value="">
+                        <em>Color</em>
+                    </MenuItem>
+                    <MenuItem value={'#FF0000'}>Red</MenuItem>
+                    <MenuItem value={'#008000'}>Green</MenuItem>
+                    <MenuItem value={'#0000FF'}>Blue</MenuItem>
+                    <MenuItem value={'#800080'}>Purple</MenuItem>
+                </Select>
+        </FormControl>
+        <Button
+            className='hover:bg-red-100'
+            sx={{ p: 2, backgroundColor: 'red' }}
+            variant="contained"
+            onClick={onErase}>
+            Erase All
+        </Button>
     </div>
   )
 }
