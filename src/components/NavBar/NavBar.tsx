@@ -4,7 +4,7 @@ const NavBar = () => {
   
   return (
     <div className='bg-slate-500 text-center'>
-      <h1>STEM sims</h1>
+      <h1 className='font-bold'>STEM sims</h1>
     </div>
   )
 }

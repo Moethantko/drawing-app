@@ -12,8 +12,8 @@ interface SelectToolProps {
 
 const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, onErase }: SelectToolProps) => {
 
-    const [tool, setTool] = useState('pen')
-    const [color, setColor] = useState('Red')
+    const [tool, setTool] = useState('pen');
+    const [color, setColor] = useState('Red');
 
     const handleToolChange = (e: SelectChangeEvent) => {
         setTool(e.target.value as string);
@@ -39,9 +39,9 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
                     <em>Select Drawing Tool</em>
                 </MenuItem>
                 <MenuItem value={'pen'}>Pen</MenuItem>
-                <MenuItem value={'eraser'}>Eraser</MenuItem>
                 <MenuItem value={'rect'}>Rectagle</MenuItem>
                 <MenuItem value={'circle'}>Circle</MenuItem>
+                <MenuItem value={'eraser'}>Eraser</MenuItem>
             </Select>
       </FormControl>
       <FormControl>
@@ -60,7 +60,7 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
                 <MenuItem value={'#800080'}>Purple</MenuItem>
             </Select>
       </FormControl>
-      <Button 
+      <Button
         variant="contained"
         onClick={onErase}>
         Erase All

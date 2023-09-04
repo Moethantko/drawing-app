@@ -1,26 +1,39 @@
 import { useRef, useState } from "react";
-import { Stage, Layer, Line, Rect } from "react-konva";
+import { Stage, Layer, Line, Rect, Circle } from "react-konva";
 import SelectTool from "../ToolBar/ToolBar";
 
 interface Line {
     points: [x: number, y: number];
-  }
+}
+
+interface Rectagle {
+  x: number,
+  y: number,
+  width: number,
+  height: number
+}
   
 const Canvas = () => {
     const [tool, setTool] = useState("pen");
     const [color, setColor] = useState("");
 
     const [lines, setLines] = useState<any>([]);
-    const [rectangles, setRectangles] = useState<any>([]);
+    const [annotations, setAnnotations] = useState<any>([]);
+    const [newAnnotation, setNewAnnotation] = useState<any>([]);
+    const [circles, setCircles] = useState<any>([]);
+    const [newCircle, setNewCircle] = useState<any>({
+      x: 0,
+      y: 0,
+      radius: 0,
+    });
 
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-    const [endPos, setEndPos] = useState({ x: 0, y: 0 });
+    
 
     const isDrawing = useRef(false);
 
     const onSelectTool = (tool: string) => {
       setTool(tool)
-      //console.log(tool)
+      console.log(tool)
     }
 
     const onSelectColor = (color: string) => {
@@ -30,18 +43,24 @@ const Canvas = () => {
 
     const onErase = () => {
       setLines([])
-      setRectangles([])
+      setAnnotations([])
+      setCircles([])
     }
 
     const handleMouseDown = (e: any) => {
         if (tool === "pen") {
           isDrawing.current = true;
           const pos = e.target.getStage().getPointerPosition();
-          setLines([...lines, { points: [pos.x, pos.y] }]);
+          setLines([...lines, { tool, points: [pos.x, pos.y] }]);
         } else if (tool === "rect") {
+          if (newAnnotation.length === 0) {
+            const { x, y } = e.target.getStage().getPointerPosition();
+            setNewAnnotation([{ x, y, width: 0, height: 0, key: "0" }]);
+          }
+        } else if (tool === "circle") {
           isDrawing.current = true;
-          setStartPos({ x: e.evt.clientX, y: e.evt.clientY });
-          setEndPos({ x: e.evt.clientX, y: e.evt.clientY });
+          const { x, y } = e.target.getStage().getPointerPosition();
+          setNewCircle({ x, y, radius: 0 });
         }
     };
 
@@ -62,23 +81,55 @@ const Canvas = () => {
           lines.splice(lines.length - 1, 1, lastLine);
           setLines(lines.concat());
         } else if (tool === "rect") {
-          setEndPos({ x: e.evt.clientX, y: e.evt.clientY });
+          if (newAnnotation.length === 1) {
+            const sx = newAnnotation[0].x;
+            const sy = newAnnotation[0].y;
+            const { x, y } = e.target.getStage().getPointerPosition();
+            setNewAnnotation([
+              {
+                x: sx,
+                y: sy,
+                width: x - sx,
+                height: y - sy,
+                key: "0"
+              }
+            ]);
+          }
+        } else if (tool === "circle") {
+          const { x, y } = e.target.getStage().getPointerPosition();
+          const newRadius = Math.sqrt(
+            Math.pow(newCircle.x - x, 2) + Math.pow(newCircle.y - y, 2)
+          );
+
+          setNewCircle({ ...newCircle, radius: newRadius });
         }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: any) => {
         isDrawing.current = false;
 
         if (tool === "rect") {
-          const newRect = {
-            x: Math.min(startPos.x, endPos.x),
-            y: Math.min(startPos.y, endPos.y),
-            width: Math.abs(startPos.x - endPos.x),
-            height: Math.abs(startPos.y - endPos.y),
-          };
-          setRectangles([...rectangles, newRect]);
+          if (newAnnotation.length === 1) {
+            const sx = newAnnotation[0].x;
+            const sy = newAnnotation[0].y;
+            const { x, y } = e.target.getStage().getPointerPosition();
+            const annotationToAdd = {
+              x: sx,
+              y: sy,
+              width: x - sx,
+              height: y - sy,
+              key: annotations.length + 1
+            };
+            annotations.push(annotationToAdd);
+            setNewAnnotation([]);
+            setAnnotations(annotations);
+          }
+        } else if (tool === "circle") {
+          setCircles([...circles, newCircle]);
         }
     };
+
+    const annotationsToDraw = [...annotations, ...newAnnotation];
 
   return (
     <div>
@@ -96,7 +147,6 @@ const Canvas = () => {
       >
         <Layer>
           {
-            tool === "pen" ? (
               lines.map((line: any, i: any) => (
                 <Line
                   key={i}
@@ -107,23 +157,34 @@ const Canvas = () => {
                   lineCap="round"
                   lineJoin="round"
                   globalCompositeOperation={
-                    tool === "pen" ? "source-over" : tool === "eraser" ? "source-over" : "source-in"
+                    line.tool === "eraser" ? "destination-out" : "source-over"
                   }
                 />
               ))
-            ) : (
-              rectangles.map((rect: any, i: any) => (
-                <Rect
-                  key={i}
-                  x={rect.x}
-                  y={rect.y}
-                  width={rect.width}
-                  height={rect.height}
-                  fill="blue"
-                />
-              ))
-            )
           }
+
+          {annotationsToDraw.map(value => {
+            return (
+              <Rect
+                x={value.x}
+                y={value.y}
+                width={value.width}
+                height={value.height}
+                fill="transparent"
+                stroke={color}
+              />
+            );
+        })}
+
+          {circles.map((circle: any, i: any) => (
+            <Circle
+              key={i}
+              x={circle.x}
+              y={circle.y}
+              radius={circle.radius}
+              fill={color}
+            />
+          ))}
         </Layer>
       </Stage>
     </div>
