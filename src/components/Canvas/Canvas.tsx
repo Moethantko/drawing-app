@@ -137,7 +137,7 @@ const Canvas = () => {
           onErase={onErase}
          />
         <Stage
-        className='p-4 mx-6 mt-6 shadow-md shadow-gray-600 rounded-lg'
+        className='mx-10 mt-6 shadow-inner shadow-2xl shadow-slate-400 rounded-lg'
         width={window.innerWidth}
         height={window.innerHeight}
         onMouseDown={handleMouseDown}
@@ -180,7 +180,10 @@ const Canvas = () => {
               x={circle.x}
               y={circle.y}
               radius={circle.radius}
-              fill={color}
+              fillEnabled={true}
+              opacity={1}
+              stroke={color}
+              strokeWidth={2}
             />
           ))}
         </Layer>

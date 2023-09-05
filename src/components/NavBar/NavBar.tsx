@@ -11,8 +11,14 @@ const NavBar = () => {
       </div>
       <img src={icon} alt="app icon" className='w-16 h-16' />
       <div>
-        <a href="" className='mr-4 hover:cursor-pointer'>Log In</a>
-        <a href="" className='hover:cursor-pointer'>Sign Up</a>
+        <a href="#" 
+          className='mr-4 p-3 border-[1px] border-gray-400 rounded-md hover:cursor-pointer hover:bg-green-color hover:text-white transition delay-75'>
+            Log In
+        </a>
+        <a href="#" 
+          className='p-3 border-[1px] border-gray-400 rounded-md hover:cursor-pointer hover:bg-green-color hover:text-white transition delay-75'>
+            Sign Up
+        </a>
       </div>
     </div>
   )
