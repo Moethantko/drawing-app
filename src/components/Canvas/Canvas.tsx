@@ -1,7 +1,8 @@
 import { useRef, useState } from "react";
-import { Stage, Layer, Line, Rect, Circle } from "react-konva";
+import { Stage, Layer, Line, Rect, Circle, KonvaNodeComponent, StageProps } from "react-konva";
 import ToolBar from "../ToolBar/ToolBar";
 import { KonvaEventObject } from "konva/lib/Node";
+import { v4 as uuidv4 } from 'uuid';
 
 interface Rectagle {
   x: number,
@@ -11,9 +12,10 @@ interface Rectagle {
 }
   
 const Canvas = () => {
-    const [tool, setTool] = useState("pen")
-    const [color, setColor] = useState("#FF0000")
-    const stageRef = useRef(null);
+    const [tool, setTool] = useState<string>("pen")
+    const [color, setColor] = useState<string>("#FF0000")
+    const stageRef = useRef<any>(null)
+    const isDrawing = useRef<boolean>(false)
 
     const [lines, setLines] = useState<any>([])
 
@@ -25,18 +27,14 @@ const Canvas = () => {
       x: 0,
       y: 0,
       radius: 0,
-    });
-
-    const isDrawing = useRef(false)
+    })
 
     const handleSelectTool = (tool: string) => {
       setTool(tool)
-      console.log(tool)
     }
 
     const handleSelectColor = (color: string) => {
       setColor(color)
-      //console.log(color)
     }
 
     const handleErase = () => {
@@ -44,83 +42,115 @@ const Canvas = () => {
       setAnnotations([])
       setCircles([])
     }
+
     const handleDownload = () => {
-      const dataURL = stageRef.current.toDataURL();
-      const link = document.createElement('a');
-      link.href = dataURL;
-      link.download = 'drawing.png';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const dataURL = stageRef.current.toDataURL()
+
+      const link = document.createElement('a')
+      link.href = dataURL
+      link.download = 'drawing.png'
+
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     }
 
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
-        if (tool === "pen") {
-          isDrawing.current = true
-          const pos = e.target.getStage().getPointerPosition()
-          setLines([...lines, { tool, color, points: [pos.x, pos.y] }])
-        } else if (tool === "rect") {
-          if (newAnnotation.length === 0) {
+        switch (tool) {
+
+          case 'pen':
+            isDrawing.current = true
+            const pos = e.target.getStage().getPointerPosition()
+            setLines([...lines, { tool, color, points: [pos.x, pos.y] }])
+            break;
+
+          case 'rect':
+            if (newAnnotation.length === 0) {
+              const { x, y } = e.target.getStage().getPointerPosition()
+              const id = uuidv4()
+              
+              setNewAnnotation([{ x, y, width: 0, height: 0, key: id, color }])
+            }
+            break;
+
+          case 'circle':
             const { x, y } = e.target.getStage().getPointerPosition()
-            setNewAnnotation([{ x, y, width: 0, height: 0, key: "0", color }])
-          }
-        } else if (tool === "circle") {
-          isDrawing.current = true
-          const { x, y } = e.target.getStage().getPointerPosition()
-          setNewCircle({ x, y, radius: 0, color })
+            setNewCircle({ x, y, radius: 0, color })
+            break;
+
+          default:
+            // pass
+
         }
+
     };
 
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
-        // Skip if user is not drawing
-        if (!isDrawing.current) {
-        return;
-        }
 
-        if (tool === "pen") {
+      switch (tool) {
+
+        case 'pen':
+          /* Skip if user is not drawing */
+          if (!isDrawing.current) {
+            return;
+          }
+
           const stage = e.target.getStage();
           const point = stage.getPointerPosition();
           let lastLine = lines[lines.length - 1];
-          // add point
+    
           lastLine.points = lastLine.points.concat([point.x, point.y]);
-
-          // replace last
           lines.splice(lines.length - 1, 1, lastLine);
           setLines(lines.concat());
-        } else if (tool === "rect") {
+          break;
+        case 'rect':
           if (newAnnotation.length === 1) {
-            const sx = newAnnotation[0].x;
-            const sy = newAnnotation[0].y;
-            const { x, y } = e.target.getStage().getPointerPosition();
+            const sx = newAnnotation[0].x
+            const sy = newAnnotation[0].y
+
+            const { x, y } = e.target.getStage().getPointerPosition()
+            const id = uuidv4()
+
             setNewAnnotation([
               {
                 x: sx,
                 y: sy,
                 width: x - sx,
                 height: y - sy,
-                key: "0",
+                key: id,
                 color
               }
             ]);
           }
-        } else if (tool === "circle") {
-          const { x, y } = e.target.getStage().getPointerPosition();
+          break;
+        case 'circle':
+          const { x, y } = e.target.getStage().getPointerPosition()
+
           const newRadius = Math.sqrt(
             Math.pow(x - newCircle.x, 2) + Math.pow(y - newCircle.y, 2)
           ) - 100;
 
-          setNewCircle({ ...newCircle, radius: newRadius });
-        }
+          setNewCircle({ ...newCircle, radius: newRadius })
+          break;
+        default:
+          // pass
+
+      }
     };
 
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
-        isDrawing.current = false;
 
-        if (tool === "rect") {
+      switch (tool) {
+        case 'pen':
+          isDrawing.current = false
+          break
+        case 'rect':
           if (newAnnotation.length === 1) {
-            const sx = newAnnotation[0].x;
-            const sy = newAnnotation[0].y;
-            const { x, y } = e.target.getStage().getPointerPosition();
+            const sx = newAnnotation[0].x
+            const sy = newAnnotation[0].y
+
+            const { x, y } = e.target.getStage().getPointerPosition()
+            
             const annotationToAdd = {
               x: sx,
               y: sy,
@@ -128,15 +158,18 @@ const Canvas = () => {
               height: y - sy,
               key: annotations.length + 1,
               color
-            };
+            }
 
-            annotations.push(annotationToAdd);
-            setNewAnnotation([]);
-            setAnnotations(annotations);
+            annotations.push(annotationToAdd)
+            setNewAnnotation([])
+            setAnnotations(annotations)
           }
-        } else if (tool === "circle") {
-          setCircles([...circles, newCircle]);
-        }
+          break
+        case 'circle':
+          setCircles([...circles, newCircle])
+          break
+
+      }
     };
 
     const annotationsToDraw = [...annotations, ...newAnnotation]
@@ -168,9 +201,7 @@ const Canvas = () => {
                   tension={0.5}
                   lineCap="round"
                   lineJoin="round"
-                  globalCompositeOperation={
-                    line.tool === "eraser" ? "destination-out" : "source-over"
-                  }
+                  globalCompositeOperation={"source-over"}
                 />
               ))
           }
