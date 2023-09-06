@@ -1,10 +1,7 @@
 import { useRef, useState } from "react";
 import { Stage, Layer, Line, Rect, Circle } from "react-konva";
-import SelectTool from "../ToolBar/ToolBar";
-
-interface Line {
-    points: [x: number, y: number];
-}
+import ToolBar from "../ToolBar/ToolBar";
+import { KonvaEventObject } from "konva/lib/Node";
 
 interface Rectagle {
   x: number,
@@ -14,55 +11,67 @@ interface Rectagle {
 }
   
 const Canvas = () => {
-    const [tool, setTool] = useState("pen");
-    const [color, setColor] = useState("#FF0000");
+    const [tool, setTool] = useState("pen")
+    const [color, setColor] = useState("#FF0000")
+    const stageRef = useRef(null);
 
-    const [lines, setLines] = useState<any>([]);
-    const [annotations, setAnnotations] = useState<any>([]);
-    const [newAnnotation, setNewAnnotation] = useState<any>([]);
-    const [circles, setCircles] = useState<any>([]);
+    const [lines, setLines] = useState<any>([])
+
+    const [annotations, setAnnotations] = useState<any>([])
+    const [newAnnotation, setNewAnnotation] = useState<any>([])
+
+    const [circles, setCircles] = useState<any>([])
     const [newCircle, setNewCircle] = useState<any>({
       x: 0,
       y: 0,
       radius: 0,
     });
 
-    const isDrawing = useRef(false);
+    const isDrawing = useRef(false)
 
-    const onSelectTool = (tool: string) => {
+    const handleSelectTool = (tool: string) => {
       setTool(tool)
       console.log(tool)
     }
 
-    const onSelectColor = (color: string) => {
+    const handleSelectColor = (color: string) => {
       setColor(color)
       //console.log(color)
     }
 
-    const onErase = () => {
+    const handleErase = () => {
       setLines([])
       setAnnotations([])
       setCircles([])
     }
+    const handleDownload = () => {
+      const dataURL = stageRef.current.toDataURL();
+      const link = document.createElement('a');
+      link.href = dataURL;
+      link.download = 'drawing.png';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
 
-    const handleMouseDown = (e: any) => {
+    const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
         if (tool === "pen") {
-          isDrawing.current = true;
-          const pos = e.target.getStage().getPointerPosition();
-          setLines([...lines, { tool, points: [pos.x, pos.y] }]);
+          isDrawing.current = true
+          const pos = e.target.getStage().getPointerPosition()
+          setLines([...lines, { tool, color, points: [pos.x, pos.y] }])
         } else if (tool === "rect") {
           if (newAnnotation.length === 0) {
-            const { x, y } = e.target.getStage().getPointerPosition();
-            setNewAnnotation([{ x, y, width: 0, height: 0, key: "0" }]);
+            const { x, y } = e.target.getStage().getPointerPosition()
+            setNewAnnotation([{ x, y, width: 0, height: 0, key: "0", color }])
           }
         } else if (tool === "circle") {
-          isDrawing.current = true;
-          const { x, y } = e.target.getStage().getPointerPosition();
-          setNewCircle({ x, y, radius: 0 });
+          isDrawing.current = true
+          const { x, y } = e.target.getStage().getPointerPosition()
+          setNewCircle({ x, y, radius: 0, color })
         }
     };
 
-    const handleMouseMove = (e: any) => {
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
         // Skip if user is not drawing
         if (!isDrawing.current) {
         return;
@@ -89,7 +98,8 @@ const Canvas = () => {
                 y: sy,
                 width: x - sx,
                 height: y - sy,
-                key: "0"
+                key: "0",
+                color
               }
             ]);
           }
@@ -103,7 +113,7 @@ const Canvas = () => {
         }
     };
 
-    const handleMouseUp = (e: any) => {
+    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
         isDrawing.current = false;
 
         if (tool === "rect") {
@@ -116,8 +126,10 @@ const Canvas = () => {
               y: sy,
               width: x - sx,
               height: y - sy,
-              key: annotations.length + 1
+              key: annotations.length + 1,
+              color
             };
+
             annotations.push(annotationToAdd);
             setNewAnnotation([]);
             setAnnotations(annotations);
@@ -127,29 +139,31 @@ const Canvas = () => {
         }
     };
 
-    const annotationsToDraw = [...annotations, ...newAnnotation];
+    const annotationsToDraw = [...annotations, ...newAnnotation]
 
   return (
     <div>
-        <SelectTool 
-          onSelectTool={onSelectTool} 
-          onSelectColor={onSelectColor}
-          onErase={onErase}
+        <ToolBar 
+          onSelectTool={handleSelectTool} 
+          onSelectColor={handleSelectColor}
+          onErase={handleErase}
+          onDownload={handleDownload}
          />
         <Stage
-        className='mx-10 mt-6 shadow-inner shadow-2xl shadow-slate-400 rounded-lg'
-        width={window.innerWidth}
-        height={window.innerHeight}
-        onMouseDown={handleMouseDown}
-        onMousemove={handleMouseMove}
-        onMouseup={handleMouseUp}>
+          ref={stageRef}
+          className='mx-6 mt-6 shadow-inner shadow-2xl shadow-slate-400 rounded-lg'
+          width={window.innerWidth}
+          height={window.innerHeight}
+          onMouseDown={handleMouseDown}
+          onMousemove={handleMouseMove}
+          onMouseup={handleMouseUp}>
         <Layer>
           {
               lines.map((line: any, i: any) => (
                 <Line
                   key={i}
                   points={line.points}
-                  stroke={color}
+                  stroke={line.color}
                   strokeWidth={5}
                   tension={0.5}
                   lineCap="round"
@@ -161,18 +175,18 @@ const Canvas = () => {
               ))
           }
 
-          {annotationsToDraw.map(value => {
+          {annotationsToDraw.map((rect: any) => {
             return (
               <Rect
-                x={value.x}
-                y={value.y}
-                width={value.width}
-                height={value.height}
+                x={rect.x}
+                y={rect.y}
+                width={rect.width}
+                height={rect.height}
                 fill="transparent"
-                stroke={color}
+                stroke={rect.color}
               />
             );
-        })}
+          })}
 
           {circles.map((circle: any, i: any) => (
             <Circle
@@ -182,7 +196,7 @@ const Canvas = () => {
               radius={circle.radius}
               fillEnabled={true}
               opacity={1}
-              stroke={color}
+              stroke={circle.color}
               strokeWidth={2}
             />
           ))}
