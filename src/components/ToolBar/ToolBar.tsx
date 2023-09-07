@@ -85,19 +85,19 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
             <div className='flex border-[1px] border-gray-300 rounded-md p-1 md:p-2'>
                 <div 
                     className={color === 'red' ? 'w-8 h-8 bg-red-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  : 
-                    'w-8 h-8 bg-red-500 rounded-sm mr-1'}
+                    'w-8 h-8 bg-red-500 rounded-sm mr-1 hover:cursor-pointer'}
                     onClick={() => handleColorChange('red')} />
                 <div 
                     className={color === 'green' ? 'w-8 h-8 bg-green-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  : 
-                    'w-8 h-8 bg-green-500 rounded-sm mr-1'}
+                    'w-8 h-8 bg-green-500 rounded-sm mr-1 hover:cursor-pointer'}
                     onClick={() => handleColorChange('green')} />
                 <div 
                     className={color === 'blue' ? 'w-8 h-8 bg-blue-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  : 
-                    'w-8 h-8 bg-blue-500 rounded-sm mr-1'}
+                    'w-8 h-8 bg-blue-500 rounded-sm mr-1 hover:cursor-pointer'}
                     onClick={() => handleColorChange('blue')} />
                 <div 
                     className={color === 'purple' ? 'w-8 h-8 bg-purple-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  : 
-                    'w-8 h-8 bg-purple-500 rounded-sm mr-1'}
+                    'w-8 h-8 bg-purple-500 rounded-sm mr-1 hover:cursor-pointer'}
                     onClick={() => handleColorChange('purple')} />
             </div>
 
