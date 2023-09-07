@@ -27,7 +27,7 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
     const [tool, setTool] = useState<string>('pen')
     const [color, setColor] = useState<string>('red')
 
-    const [openDialog, setOpenDialog] = useState<boolean>(false)
+    const [openEraseConfirmDialog, setOpenEraseConfirmDialog] = useState<boolean>(false)
     const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false)
 
     const [drawingTitle, setDrawingTitle] = useState<string>('Untitled Drawing')
@@ -47,7 +47,7 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
 
     const handleErase = () => {
         onErase()
-        setOpenDialog(false)
+        setOpenEraseConfirmDialog(false)
     }
 
     const handleSaveDrawing = () => {
@@ -86,7 +86,7 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
                         className={tool === 'eraser' ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
                         : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
-                        onClick={() => setOpenDialog(true)} />
+                        onClick={() => setOpenEraseConfirmDialog(true)} />
                 </div>
                 <div className='flex border-[1px] border-gray-300 rounded-md p-2 mt-2 mr-2 md:p-2'>
                      <div
@@ -142,7 +142,7 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
             <h3 className='font-jost font-semibold text-2xl p-1 w-1.3'>{ drawingTitle }</h3>
         </div>
         
-        <Dialog onClose={() => setOpenDialog(false)} open={openDialog}>
+        <Dialog onClose={() => setOpenEraseConfirmDialog(false)} open={openEraseConfirmDialog}>
             <DialogTitle>Are you sure you want to erase all drawings?</DialogTitle>
             <DialogContent>
             <Button
@@ -154,13 +154,13 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
             <Button
                 variant="contained"
                 sx={{ ml:1 }}
-                onClick={() => setOpenDialog(false)}>
+                onClick={() => setOpenEraseConfirmDialog(false)}>
                 No
             </Button>
             </DialogContent>
         </Dialog>
 
-        <Dialog onClose={() => setOpenDialog(false)} open={openSaveDialog}>
+        <Dialog onClose={() => setOpenSaveDialog(false)} open={openSaveDialog}>
             <DialogTitle className='bg-green-color text-white'>Save the drawing</DialogTitle>
             <DialogContent>
                 <TextField
