@@ -1,7 +1,5 @@
 import React, { useRef, useState } from 'react'
 import Button from '@mui/material/Button';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
 import CreateIcon from '@mui/icons-material/Create';
 import RectangleIcon from '@mui/icons-material/Rectangle';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -14,6 +12,8 @@ import DialogActions from '@mui/material/DialogActions';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DownloadIcon from '@mui/icons-material/Download';
 import BrushIcon from '@mui/icons-material/Brush';
+import EraseConfirmDialog from '../Dialogs/EraseConfirmDialog';
+import SaveDialog from '../Dialogs/SaveDialog';
 
 interface SelectToolProps {
     onSelectTool: (tool: string) => void;
@@ -50,8 +50,8 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
         setOpenEraseConfirmDialog(false)
     }
 
-    const handleSaveDrawing = () => {
-        setDrawingTitle(drawingTitleText)
+    const handleSaveDrawing = (title: string) => {
+        setDrawingTitle(title)
         setHasSaved(true)
         setOpenSaveDialog(false)
     }
@@ -141,45 +141,18 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
         <div className='mt-6'>
             <h3 className='font-jost font-semibold text-2xl p-1 w-1.3'>{ drawingTitle }</h3>
         </div>
-        
-        <Dialog onClose={() => setOpenEraseConfirmDialog(false)} open={openEraseConfirmDialog}>
-            <DialogTitle>Are you sure you want to erase all drawings?</DialogTitle>
-            <DialogContent>
-            <Button
-                color='error'
-                variant="contained"
-                onClick={handleErase}>
-                Yes
-            </Button>
-            <Button
-                variant="contained"
-                sx={{ ml:1 }}
-                onClick={() => setOpenEraseConfirmDialog(false)}>
-                No
-            </Button>
-            </DialogContent>
-        </Dialog>
 
-        <Dialog onClose={() => setOpenSaveDialog(false)} open={openSaveDialog}>
-            <DialogTitle className='bg-green-color text-white'>Save the drawing</DialogTitle>
-            <DialogContent>
-                <TextField
-                autoFocus
-                margin="dense"
-                id="name"
-                label="File Name"
-                type="email"
-                fullWidth
-                variant="standard"
-                value={drawingTitleText}
-                onChange={(e) => setDrawingTitleText(e.currentTarget.value)} />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={() => setOpenSaveDialog(false)}>Cancel</Button>
-                <Button onClick={handleSaveDrawing}>Save Drawing</Button>
-            </DialogActions>
-            
-        </Dialog>
+        <EraseConfirmDialog
+            openEraseConfirmDialog={openEraseConfirmDialog}
+            setOpenEraseConfirmDialog={setOpenEraseConfirmDialog}
+            handleErase={handleErase} />
+
+         <SaveDialog 
+            drawingTitle={drawingTitle}
+            openSaveDialog={openSaveDialog}
+            setOpenSaveDialog={setOpenSaveDialog}
+            handleSaveDrawing={handleSaveDrawing} />
+        
     </div>
   )
 }
