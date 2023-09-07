@@ -63,8 +63,14 @@ const Canvas = () => {
 
           case 'pen':
             isDrawing.current = true
-            const pos = e.target.getStage().getPointerPosition()
-            setLines([...lines, { tool, color, points: [pos.x, pos.y] }])
+            const penPos = e.target.getStage().getPointerPosition()
+            setLines([...lines, { tool, color, points: [penPos.x, penPos.y] }])
+            break
+
+          case 'brush':
+            isDrawing.current = true
+            const brushPos = e.target.getStage().getPointerPosition()
+            setLines([...lines, { tool, color, points: [brushPos.x, brushPos.y] }])
             break
 
           case 'rect':
@@ -111,6 +117,22 @@ const Canvas = () => {
           lines.splice(lines.length - 1, 1, lastLine)
           setLines(lines.concat())
           break
+
+        case 'brush':
+          /* Skip if user is not drawing */
+          if (!isDrawing.current) {
+            return
+          }
+    
+          const brushStage = e.target.getStage()
+          const brushPos = brushStage.getPointerPosition()
+
+          let lastBrushLine = lines[lines.length - 1]
+          lastBrushLine.points = lastBrushLine.points.concat([brushPos.x, brushPos.y])
+          lines.splice(lines.length - 1, 1, lastBrushLine)
+          setLines(lines.concat())
+          break
+
         case 'rect':
           if (newRectangle.length === 1) {
             const sx = newRectangle[0].x
@@ -131,6 +153,7 @@ const Canvas = () => {
             ]);
           }
           break
+
         case 'circle':
           if (newCircle.length === 1) {
 
@@ -159,6 +182,9 @@ const Canvas = () => {
 
       switch (tool) {
         case 'pen':
+          isDrawing.current = false
+          break
+        case 'brush':
           isDrawing.current = false
           break
         case 'rect':
@@ -245,8 +271,8 @@ const Canvas = () => {
                   key={i}
                   points={line.points}
                   stroke={line.color}
-                  strokeWidth={4}
-                  tension={0.5}
+                  strokeWidth={line.tool === 'pen' ? 4 : line.tool === 'brush' ? 25 : 4}
+                  tension={0.1}
                   lineCap="round"
                   lineJoin="round"
                   globalCompositeOperation={"source-over"}
