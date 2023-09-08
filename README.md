@@ -47,7 +47,9 @@ npm  start
 
 ## Saving in MySQL database and backend
 
-There are two ways to save the drawing: locally on computer and on the server. I implemented the feature that allow saving the drawing by downloading. In a production-level app, I would implement a full-authentication feature to allow the user sign into their account. Then, the user can save the drawing. By saving, the drawing have the metadata (title, creator) and the drawing image itself. Let's say that we have two tables: User and Drawing.
+There are two methods for saving your drawings: locally on your computer and on the server. Currently, I've implemented a feature that enables you to save your drawing by downloading it directly. In a production-ready application, I would further develop this feature by implementing full authentication, allowing users to sign in to their accounts. With this functionality, users can save their drawings, complete with metadata like the title and creator's information.
+
+For database management, we could utilize two tables: 'User' and 'Drawing'.
 
 ### User Table
 
