@@ -13,6 +13,7 @@ import EraseConfirmDialog from '../Dialogs/EraseConfirmDialog';
 import SaveDialog from '../Dialogs/SaveDialog';
 import { DrawingTool, DrawingColor } from '../Types/types';
 
+/* props to handle methods from Canvas component */
 interface SelectToolProps {
     onSelectTool: (tool: DrawingTool) => void;
     onSelectColor: (color: DrawingColor) => void;
@@ -33,32 +34,37 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
 
     const fileInputRef = useRef<any>(null)
 
+    /* change the drawing tool in both ToolBar and Canvas components */
     const handleToolChange = (tool: DrawingTool): void => {
         setTool(tool)
         onSelectTool(tool)
     };
 
+    /* change the drawing tool color in both ToolBar and Canvas components */
     const handleColorChange = (color: DrawingColor): void => {
         setColor(color)
         onSelectColor(color)
     };
 
+    /* erase all drawings by calling the erase method from Canvas */
     const handleErase = (): void => {
         onErase()
         setOpenEraseConfirmDialog(false)
     }
 
+    /* hypothetically save the drawing by giving the title to current drawing */
     const handleSaveDrawing = (title: string): void => {
         setDrawingTitle(title)
         setHasSaved(true)
         setOpenSaveDialog(false)
     }
 
+    /* click the hidden html file input */
     const handleUploadBtnClick = (): void => {
-        // click the hidden html file input
         fileInputRef.current.click();
     };
 
+    /* choose the file and upload the image to React state */
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         // chose the first selected file
         const selectedFile = e.target.files[0]
