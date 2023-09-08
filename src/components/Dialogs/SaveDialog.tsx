@@ -11,7 +11,6 @@ interface SaveDialogProps {
     setOpenSaveDialog: (open: boolean) => void;
     handleSaveDrawing: (title: string) => void;
     drawingTitle: string;
-    // setDrawingTitle: (title: string) => void;
 }
 
 const SaveDialog: React.FC<SaveDialogProps> = ({ openSaveDialog, drawingTitle, setOpenSaveDialog, handleSaveDrawing }: SaveDialogProps) => {

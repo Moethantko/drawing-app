@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { ChangeEventHandler, useRef, useState } from 'react'
 import Button from '@mui/material/Button';
 import CreateIcon from '@mui/icons-material/Create';
 import RectangleIcon from '@mui/icons-material/Rectangle';
@@ -6,9 +6,6 @@ import CircleIcon from '@mui/icons-material/Circle';
 import AutoFixNormalIcon from '@mui/icons-material/AutoFixNormal';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import SaveIcon from '@mui/icons-material/Save';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 import DownloadIcon from '@mui/icons-material/Download';
 import BrushIcon from '@mui/icons-material/Brush';
@@ -20,9 +17,10 @@ interface SelectToolProps {
     onSelectColor: (color: string) => void;
     onErase: () => void;
     onDownload: () => void;
+    handleUploadImg: (img: any) => void;
 }
 
-const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, onErase, onDownload }: SelectToolProps) => {
+const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, onErase, onDownload, handleUploadImg }: SelectToolProps) => {
 
     const [tool, setTool] = useState<string>('pen')
     const [color, setColor] = useState<string>('red')
@@ -31,8 +29,6 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
     const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false)
 
     const [drawingTitle, setDrawingTitle] = useState<string>('Untitled Drawing')
-
-    const [drawingTitleText, setDrawingTitleText] = useState<string>(drawingTitle)
     const [hasSaved, setHasSaved] = useState<boolean>(false)
 
     const handleToolChange = (tool: string) => {
@@ -55,6 +51,28 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
         setHasSaved(true)
         setOpenSaveDialog(false)
     }
+    const fileInputRef = useRef(null)
+
+    const handleUploadBtnClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files[0]
+
+        if (selectedFile) {
+            const reader = new FileReader()
+      
+            reader.onload = (e) => {
+                handleUploadImg(e.target.result)
+
+                // clear the currently selected file to allow the user to select the same file
+                fileInputRef.current.value = ''
+            };
+      
+            reader.readAsDataURL(selectedFile)
+        }
+    };
 
   return (
     <div className='mt-4 ml-6'>
@@ -126,11 +144,17 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
                         )
                     }
                 </div>
-                <div className='ml-2 mt-2'>
+                <div className='ml-2 mt-2' onClick={handleUploadBtnClick}>
                     <Button variant="outlined" startIcon={<FileUploadIcon />} style={{ paddingTop: 12, paddingBottom: 12 }}>
                         Upload
                     </Button>
                 </div>
+                <input
+                    className='hidden'
+                    type="file"
+                    accept=".png"  
+                    ref={fileInputRef}
+                    onChange={handleFileChange}/>
                 <div className='ml-2 mt-2' onClick={onDownload}>
                     <Button variant="outlined" startIcon={<DownloadIcon />} style={{ paddingTop: 12, paddingBottom: 12 }}>
                         Download

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Stage, Layer, Line, Rect, Circle, KonvaNodeComponent, StageProps } from "react-konva";
+import { Stage, Layer, Line, Rect, Circle, Image } from "react-konva";
 import ToolBar from "../ToolBar/ToolBar";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from 'uuid';
@@ -14,10 +14,11 @@ interface Rectagle {
 const Canvas = () => {
     const [tool, setTool] = useState<string>("pen")
     const [color, setColor] = useState<string>("#FF0000")
-    const stageRef = useRef<any>(null)
 
-    const isDrawing = useRef<boolean>(false)
-    //const [isDragging, setIsDragging] = useState<boolean>(false)
+    const stageRef = useRef<any>(null)
+    const [uploadedImage, setUploadedImgage] = useState<any>(null)
+
+    const[isDrawing, setIsDrawing] = useState<boolean>(false)
 
     const [lines, setLines] = useState<any>([])
 
@@ -42,6 +43,24 @@ const Canvas = () => {
       setLines([])
       setRectangles([])
       setCircles([])
+      setUploadedImgage(null)
+    }
+
+    /* upload the existing png image file and replace all current drawings on canvas */
+    const handleUploadImg = (img: string) => {
+
+      console.log('In the func')
+      
+      //first, erase everything currently on canvas before uploading a new img
+      handleErase()
+
+      const image = new window.Image()
+      image.src = img
+      image.onload = () => {
+        setUploadedImgage(image)
+      };
+
+      //console.log(`Uploaded Img is null: ${uploadedImage === null}`)
     }
 
     /* download the current drawing as png file */
@@ -62,18 +81,19 @@ const Canvas = () => {
         switch (tool) {
 
           case 'pen':
-            isDrawing.current = true
+            setIsDrawing(true)
             const penPos = e.target.getStage().getPointerPosition()
             setLines([...lines, { tool, color, points: [penPos.x, penPos.y] }])
             break
 
           case 'brush':
-            isDrawing.current = true
+            setIsDrawing(true)
             const brushPos = e.target.getStage().getPointerPosition()
             setLines([...lines, { tool, color, points: [brushPos.x, brushPos.y] }])
             break
 
           case 'rect':
+            setIsDrawing(true)
             if (newRectangle.length === 0) {
               const { x, y } = e.target.getStage().getPointerPosition()
               const id = uuidv4()
@@ -83,6 +103,7 @@ const Canvas = () => {
             break
 
           case 'circle':
+            setIsDrawing(true)
             if (newCircle.length === 0) {
               const { x, y } = e.target.getStage().getPointerPosition()
               const id = uuidv4()
@@ -105,32 +126,37 @@ const Canvas = () => {
 
         case 'pen':
           /* Skip if user is not drawing */
-          if (!isDrawing.current) {
+          if (!isDrawing) {
             return
           }
 
           const stage = e.target.getStage()
           const point = stage.getPointerPosition()
-          let lastLine = lines[lines.length - 1]
-    
-          lastLine.points = lastLine.points.concat([point.x, point.y])
-          lines.splice(lines.length - 1, 1, lastLine)
-          setLines(lines.concat())
+
+          if (lines[lines.length - 1] !== undefined) {
+            let lastLine = lines[lines.length - 1]
+            lastLine.points = lastLine.points.concat([point.x, point.y])
+            lines.splice(lines.length - 1, 1, lastLine)
+            setLines(lines.concat())
+          }
+
           break
 
         case 'brush':
           /* Skip if user is not drawing */
-          if (!isDrawing.current) {
+          if (!isDrawing) {
             return
           }
     
           const brushStage = e.target.getStage()
           const brushPos = brushStage.getPointerPosition()
 
-          let lastBrushLine = lines[lines.length - 1]
-          lastBrushLine.points = lastBrushLine.points.concat([brushPos.x, brushPos.y])
-          lines.splice(lines.length - 1, 1, lastBrushLine)
-          setLines(lines.concat())
+          if (lines[lines.length - 1] !== undefined) {
+            let lastBrushLine = lines[lines.length - 1]
+            lastBrushLine.points = lastBrushLine.points.concat([brushPos.x, brushPos.y])
+            lines.splice(lines.length - 1, 1, lastBrushLine)
+            setLines(lines.concat())
+          }
           break
 
         case 'rect':
@@ -182,10 +208,10 @@ const Canvas = () => {
 
       switch (tool) {
         case 'pen':
-          isDrawing.current = false
+          setIsDrawing(false)
           break
         case 'brush':
-          isDrawing.current = false
+          setIsDrawing(false)
           break
         case 'rect':
           if (newRectangle.length === 1) {
@@ -234,16 +260,6 @@ const Canvas = () => {
       }
     };
 
-    // const handleLineDragEnd = (e: KonvaEventObject<DragEvent>) => {
-    //   setIsDragging(false)
-    //   setLines([...lines, { tool, color, points: [e.target.x(), e.target.y()] }])
-    // }
-
-    // const handleRectDragEnd = (e: KonvaEventObject<DragEvent>) => {
-    //   setIsDragging(false)
-    //   setAnnotations([...annotations, { x: e.target.x(), y: e.target.y() }])
-    // }
-
     const rectanglesToDraw = [...rectangles, ...newRectangle]
     const circlesToDraw = [...circles, ...newCircle]
 
@@ -254,7 +270,9 @@ const Canvas = () => {
           onSelectColor={handleSelectColor}
           onErase={handleErase}
           onDownload={handleDownload}
+          handleUploadImg={handleUploadImg}
          />
+
         <Stage
           ref={stageRef}
           className='mx-6 mt-6 shadow-inner shadow-2xl shadow-slate-400 rounded-lg'
@@ -263,7 +281,11 @@ const Canvas = () => {
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}>
+
         <Layer>
+
+          {uploadedImage !== null && <Image image={uploadedImage} />}
+
           {
               lines.map((line: any, i: any) => (
                 <Line
@@ -282,6 +304,7 @@ const Canvas = () => {
 
           {rectanglesToDraw.map((rect: any) => (
               <Rect
+                key={rect.key}
                 x={rect.x}
                 y={rect.y}
                 width={rect.width}
@@ -294,6 +317,7 @@ const Canvas = () => {
 
           {circlesToDraw.map((circle: any) => (
             <Circle
+              key={circle.key}
               x={circle.x}
               y={circle.y}
               radius={circle.radius}
