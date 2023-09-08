@@ -65,15 +65,9 @@ There are two ways to save the drawing: locally on computer and on the server. I
 
 These two tables represent One-To-Many relationship. The user can have many drawings while each drawing only has one creator. The Drawing table uses Foreign Key (userID) to save its creator. 
 
-When the user click on 'Save' button, a new entry in Drawing table will be created with its creator id. The user can save the drawing only if they are currently logged in. However, they can download the drawing without logging in.
+When the user click on 'Save As' button, a new entry in Drawing table will be created with its creator id. The user can save the drawing only if they are currently logged in. However, they can download the drawing without logging in.
 
-Regarding the Backend API, we can have a hypothetical Express backend route (https://stemsims.com/api/v1/user/saveDrawing) which uses HTTP POST method. The route receives a payload in a JSON format.
-{
-	'title': 'Test Drawing',
-	createdAt: '2023-09-08 21:30:28',
-	fileData: '*************************',
-	userID: 22
-}
+Regarding the Backend API, we can have a hypothetical Express backend route (https://stemsims.com/api/v1/user/saveDrawing) which uses HTTP POST method. The route receives a payload in a JSON format. ```{ "title": "Test Drawing", "createdAt": '2023-09-08 21:30:28', "fileData": "************"}```
 
 This JSON data will be saved in the MySQL database using a INSERT statement.
 
