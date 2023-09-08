@@ -10,6 +10,13 @@ interface Rectagle {
   width: number,
   height: number
 }
+
+interface LineInterface {
+  id: string
+  tool: string,
+  color: string,
+  points: [number, number]
+}
   
 const Canvas = () => {
     const [tool, setTool] = useState<string>("pen")
@@ -38,7 +45,7 @@ const Canvas = () => {
       setColor(color)
     }
 
-    /* erase all the drawings by emptying the all arrays */
+    /* erase all the drawings by emptying the all arrays and setting image to null */
     const handleErase = () => {
       setLines([])
       setRectangles([])
@@ -48,9 +55,6 @@ const Canvas = () => {
 
     /* upload the existing png image file and replace all current drawings on canvas */
     const handleUploadImg = (img: string) => {
-
-      console.log('In the func')
-      
       //first, erase everything currently on canvas before uploading a new img
       handleErase()
 
@@ -59,17 +63,15 @@ const Canvas = () => {
       image.onload = () => {
         setUploadedImgage(image)
       };
-
-      //console.log(`Uploaded Img is null: ${uploadedImage === null}`)
     }
 
     /* download the current drawing as png file */
-    const handleDownload = () => {
+    const handleDownload = (drawingTitle: string) => {
       const dataURL = stageRef.current.toDataURL()
 
       const link = document.createElement('a')
       link.href = dataURL
-      link.download = 'drawing.png'
+      link.download = `${drawingTitle}.png`
 
       document.body.appendChild(link)
       link.click()
@@ -78,37 +80,33 @@ const Canvas = () => {
 
     /* handle mouse down event depending on current drawing tool */
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+      
+      const { x, y } = e.target.getStage().getPointerPosition()
+      const id = uuidv4()
+
         switch (tool) {
 
           case 'pen':
             setIsDrawing(true)
-            const penPos = e.target.getStage().getPointerPosition()
-            setLines([...lines, { tool, color, points: [penPos.x, penPos.y] }])
+            setLines([...lines, { id, tool, color, points: [x, y] }])
             break
 
           case 'brush':
             setIsDrawing(true)
-            const brushPos = e.target.getStage().getPointerPosition()
-            setLines([...lines, { tool, color, points: [brushPos.x, brushPos.y] }])
+            setLines([...lines, { id, tool, color, points: [x, y] }])
             break
 
           case 'rect':
             setIsDrawing(true)
             if (newRectangle.length === 0) {
-              const { x, y } = e.target.getStage().getPointerPosition()
-              const id = uuidv4()
-              
-              setNewRectangle([{ x, y, width: 0, height: 0, key: id, color }])
+              setNewRectangle([{ id, x, y, width: 0, height: 0, color }])
             }
             break
 
           case 'circle':
             setIsDrawing(true)
             if (newCircle.length === 0) {
-              const { x, y } = e.target.getStage().getPointerPosition()
-              const id = uuidv4()
-
-              setNewCircle([{ x, y, radius: 0, key: id, color }])
+              setNewCircle([{ id, x, y, radius: 0, color }])
             }
             break
             
@@ -122,6 +120,10 @@ const Canvas = () => {
     /* handle mouse move event depending on current drawing tool */
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
 
+      const stage = e.target.getStage()
+      const { x, y } = stage.getPointerPosition()
+      const id = uuidv4()
+
       switch (tool) {
 
         case 'pen':
@@ -129,17 +131,12 @@ const Canvas = () => {
           if (!isDrawing) {
             return
           }
-
-          const stage = e.target.getStage()
-          const point = stage.getPointerPosition()
-
           if (lines[lines.length - 1] !== undefined) {
             let lastLine = lines[lines.length - 1]
-            lastLine.points = lastLine.points.concat([point.x, point.y])
+            lastLine.points = lastLine.points.concat([x, y])
             lines.splice(lines.length - 1, 1, lastLine)
             setLines(lines.concat())
           }
-
           break
 
         case 'brush':
@@ -147,13 +144,10 @@ const Canvas = () => {
           if (!isDrawing) {
             return
           }
-    
-          const brushStage = e.target.getStage()
-          const brushPos = brushStage.getPointerPosition()
 
           if (lines[lines.length - 1] !== undefined) {
             let lastBrushLine = lines[lines.length - 1]
-            lastBrushLine.points = lastBrushLine.points.concat([brushPos.x, brushPos.y])
+            lastBrushLine.points = lastBrushLine.points.concat([x, y])
             lines.splice(lines.length - 1, 1, lastBrushLine)
             setLines(lines.concat())
           }
@@ -164,16 +158,13 @@ const Canvas = () => {
             const sx = newRectangle[0].x
             const sy = newRectangle[0].y
 
-            const { x, y } = e.target.getStage().getPointerPosition()
-            const id = uuidv4()
-
             setNewRectangle([
               {
+                id,
                 x: sx,
                 y: sy,
                 width: x - sx,
                 height: y - sy,
-                key: id,
                 color
               }
             ]);
@@ -186,14 +177,11 @@ const Canvas = () => {
             const sx = newCircle[0].x
             const sy = newCircle[0].y
 
-            const { x, y } = e.target.getStage().getPointerPosition()
-            const id = uuidv4()
-
             const newRadius = Math.sqrt(
               Math.pow(x - sx, 2) + Math.pow(y - sy, 2)
             );
 
-            setNewCircle([{ x: sx, y: sy, key: id, radius: newRadius, color }])
+            setNewCircle([{ id, x: sx, y: sy, radius: newRadius, color }])
           }
           
           break
@@ -206,54 +194,59 @@ const Canvas = () => {
     /* handle mouse up event depending on current drawing tool */
     const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
 
+      const { x, y } = e.target.getStage().getPointerPosition()
+      const id = uuidv4()
+
       switch (tool) {
+
         case 'pen':
           setIsDrawing(false)
           break
+
         case 'brush':
           setIsDrawing(false)
           break
+
         case 'rect':
           if (newRectangle.length === 1) {
             const sx = newRectangle[0].x
             const sy = newRectangle[0].y
 
-            const { x, y } = e.target.getStage().getPointerPosition()
+            setNewRectangle([
+              {
+                id,
+                x: sx,
+                y: sy,
+                width: x - sx,
+                height: y - sy,
+                color
+              }
+            ])
             
-            const annotationToAdd = {
-              x: sx,
-              y: sy,
-              width: x - sx,
-              height: y - sy,
-              key: rectangles.length + 1,
-              color
-            }
-
+            setRectangles([...rectangles, ...newRectangle])
             setNewRectangle([])
-            setRectangles([...rectangles, annotationToAdd])
           }
           break
+
         case 'circle':
           if (newCircle.length === 1) {
             const sx = newCircle[0].x
             const sy = newCircle[0].y
 
-            const { x, y } = e.target.getStage().getPointerPosition()
-
             const newRadius = Math.sqrt(
               Math.pow(x - sx, 2) + Math.pow(y - sy, 2)
             );
-            
-            const circleToAdd = {
+
+            setNewCircle([{
+              id,
               x: sx,
               y: sy,
-              key: circles.length + 1,
               radius: newRadius,
               color
-            }
+            }])
 
+            setCircles([...circles, ...newCircle])
             setNewCircle([])
-            setCircles([...circles, circleToAdd])
           }
           break
 
@@ -270,7 +263,7 @@ const Canvas = () => {
           onSelectColor={handleSelectColor}
           onErase={handleErase}
           onDownload={handleDownload}
-          handleUploadImg={handleUploadImg}
+          onUploadImg={handleUploadImg}
          />
 
         <Stage
@@ -283,11 +276,9 @@ const Canvas = () => {
           onMouseup={handleMouseUp}>
 
         <Layer>
-
           {uploadedImage !== null && <Image image={uploadedImage} />}
 
-          {
-              lines.map((line: any, i: any) => (
+          {lines.map((line: any, i: any) => (
                 <Line
                   className="hover:cursor-pointer"
                   key={i}
@@ -304,7 +295,7 @@ const Canvas = () => {
 
           {rectanglesToDraw.map((rect: any) => (
               <Rect
-                key={rect.key}
+                key={rect.id}
                 x={rect.x}
                 y={rect.y}
                 width={rect.width}
@@ -317,7 +308,7 @@ const Canvas = () => {
 
           {circlesToDraw.map((circle: any) => (
             <Circle
-              key={circle.key}
+              key={circle.id}
               x={circle.x}
               y={circle.y}
               radius={circle.radius}

@@ -16,11 +16,11 @@ interface SelectToolProps {
     onSelectTool: (tool: string) => void;
     onSelectColor: (color: string) => void;
     onErase: () => void;
-    onDownload: () => void;
-    handleUploadImg: (img: any) => void;
+    onDownload: (title: string) => void;
+    onUploadImg: (img: any) => void;
 }
 
-const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, onErase, onDownload, handleUploadImg }: SelectToolProps) => {
+const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, onErase, onDownload, onUploadImg }: SelectToolProps) => {
 
     const [tool, setTool] = useState<string>('pen')
     const [color, setColor] = useState<string>('red')
@@ -30,6 +30,8 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
 
     const [drawingTitle, setDrawingTitle] = useState<string>('Untitled Drawing')
     const [hasSaved, setHasSaved] = useState<boolean>(false)
+
+    const fileInputRef = useRef(null)
 
     const handleToolChange = (tool: string) => {
         setTool(tool)
@@ -51,20 +53,22 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
         setHasSaved(true)
         setOpenSaveDialog(false)
     }
-    const fileInputRef = useRef(null)
 
     const handleUploadBtnClick = () => {
+        // click the hidden html file input
         fileInputRef.current.click();
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+        // chose the first selected file
         const selectedFile = e.target.files[0]
 
         if (selectedFile) {
             const reader = new FileReader()
       
             reader.onload = (e) => {
-                handleUploadImg(e.target.result)
+                onUploadImg(e.target.result)
 
                 // clear the currently selected file to allow the user to select the same file
                 fileInputRef.current.value = ''
@@ -155,13 +159,14 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
                     accept=".png"  
                     ref={fileInputRef}
                     onChange={handleFileChange}/>
-                <div className='ml-2 mt-2' onClick={onDownload}>
+                <div className='ml-2 mt-2' onClick={() => onDownload(drawingTitle)}>
                     <Button variant="outlined" startIcon={<DownloadIcon />} style={{ paddingTop: 12, paddingBottom: 12 }}>
                         Download
                     </Button>
                 </div>
             </div>
         </div>
+
         <div className='mt-6'>
             <h3 className='font-jost font-semibold text-2xl p-1 w-1.3'>{ drawingTitle }</h3>
         </div>
