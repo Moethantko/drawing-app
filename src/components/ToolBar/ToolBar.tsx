@@ -11,19 +11,19 @@ import DownloadIcon from '@mui/icons-material/Download';
 import BrushIcon from '@mui/icons-material/Brush';
 import EraseConfirmDialog from '../Dialogs/EraseConfirmDialog';
 import SaveDialog from '../Dialogs/SaveDialog';
+import { DrawingTool, DrawingColor } from '../Types/types';
 
 interface SelectToolProps {
-    onSelectTool: (tool: string) => void;
-    onSelectColor: (color: string) => void;
+    onSelectTool: (tool: DrawingTool) => void;
+    onSelectColor: (color: DrawingColor) => void;
     onErase: () => void;
     onDownload: (title: string) => void;
     onUploadImg: (img: any) => void;
 }
 
 const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, onErase, onDownload, onUploadImg }: SelectToolProps) => {
-
-    const [tool, setTool] = useState<string>('pen')
-    const [color, setColor] = useState<string>('red')
+    const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
+    const [color, setColor] = useState<string>(DrawingColor.Red)
 
     const [openEraseConfirmDialog, setOpenEraseConfirmDialog] = useState<boolean>(false)
     const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false)
@@ -31,36 +31,35 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
     const [drawingTitle, setDrawingTitle] = useState<string>('Untitled Drawing')
     const [hasSaved, setHasSaved] = useState<boolean>(false)
 
-    const fileInputRef = useRef(null)
+    const fileInputRef = useRef<any>(null)
 
-    const handleToolChange = (tool: string) => {
+    const handleToolChange = (tool: DrawingTool): void => {
         setTool(tool)
         onSelectTool(tool)
     };
 
-    const handleColorChange = (color: string) => {
+    const handleColorChange = (color: DrawingColor): void => {
         setColor(color)
         onSelectColor(color)
     };
 
-    const handleErase = () => {
+    const handleErase = (): void => {
         onErase()
         setOpenEraseConfirmDialog(false)
     }
 
-    const handleSaveDrawing = (title: string) => {
+    const handleSaveDrawing = (title: string): void => {
         setDrawingTitle(title)
         setHasSaved(true)
         setOpenSaveDialog(false)
     }
 
-    const handleUploadBtnClick = () => {
+    const handleUploadBtnClick = (): void => {
         // click the hidden html file input
         fileInputRef.current.click();
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
         // chose the first selected file
         const selectedFile = e.target.files[0]
 
@@ -84,53 +83,53 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
             <div className='flex'>
                 <div className='flex border-[1px] border-gray-300 rounded-md p-1 mr-2 mt-2 md:p-2'>
                     <CreateIcon
-                        className={tool === 'pen' ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
+                        className={tool === DrawingTool.Pen ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
                          : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
-                        onClick={() => handleToolChange('pen')} />
+                        onClick={() => handleToolChange(DrawingTool.Pen)} />
                 
                     <BrushIcon
-                        className={tool === 'brush' ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
+                        className={tool === DrawingTool.Brush ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
                          : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
-                        onClick={() => handleToolChange('brush')} />
+                        onClick={() => handleToolChange(DrawingTool.Brush)} />
                     <RectangleIcon
-                        className={tool === 'rect' ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
+                        className={tool === DrawingTool.Rectangle ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
                         : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
-                        onClick={() => handleToolChange('rect')} />
+                        onClick={() => handleToolChange(DrawingTool.Rectangle)} />
                     <CircleIcon
-                        className={tool === 'circle' ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
+                        className={tool === DrawingTool.Cricle ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
                         : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
-                        onClick={() => handleToolChange('circle')} />
+                        onClick={() => handleToolChange(DrawingTool.Cricle)} />
                     <AutoFixNormalIcon
-                        className={tool === 'eraser' ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
+                        className={tool === DrawingTool.Eraser ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
                         : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
                         onClick={() => setOpenEraseConfirmDialog(true)} />
                 </div>
                 <div className='flex border-[1px] border-gray-300 rounded-md p-2 mt-2 mr-2 md:p-2'>
                      <div
-                        className={color === 'black' ? 'w-8 h-8 bg-black rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
+                        className={color === DrawingColor.Black ? 'w-8 h-8 bg-black rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
                         'w-8 h-8 bg-black rounded-sm mr-1 hover:cursor-pointer'}
-                        onClick={() => handleColorChange('black')} />
+                        onClick={() => handleColorChange(DrawingColor.Black)} />
                     <div
-                        className={color === 'red' ? 'w-8 h-8 bg-red-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
+                        className={color === DrawingColor.Red ? 'w-8 h-8 bg-red-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
                         'w-8 h-8 bg-red-500 rounded-sm mr-1 hover:cursor-pointer'}
-                        onClick={() => handleColorChange('red')} />
+                        onClick={() => handleColorChange(DrawingColor.Red)} />
                     <div
-                        className={color === 'green' ? 'w-8 h-8 bg-green-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
+                        className={color === DrawingColor.Green ? 'w-8 h-8 bg-green-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
                         'w-8 h-8 bg-green-500 rounded-sm mr-1 hover:cursor-pointer'}
-                        onClick={() => handleColorChange('green')} />
+                        onClick={() => handleColorChange(DrawingColor.Green)} />
                     <div
-                        className={color === 'blue' ? 'w-8 h-8 bg-blue-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
+                        className={color === DrawingColor.Blue ? 'w-8 h-8 bg-blue-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
                         'w-8 h-8 bg-blue-500 rounded-sm mr-1 hover:cursor-pointer'}
-                        onClick={() => handleColorChange('blue')} />
+                        onClick={() => handleColorChange(DrawingColor.Blue)} />
                     <div
-                        className={color === 'purple' ? 'w-8 h-8 bg-purple-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
+                        className={color === DrawingColor.Purple ? 'w-8 h-8 bg-purple-700 rounded-sm mr-1 p-1 shadow-slate-950 shadow-xl'  :
                         'w-8 h-8 bg-purple-500 rounded-sm mr-1 hover:cursor-pointer'}
-                        onClick={() => handleColorChange('purple')} />
+                        onClick={() => handleColorChange(DrawingColor.Purple)} />
                 </div>
             </div>
 
@@ -181,7 +180,6 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
             openSaveDialog={openSaveDialog}
             setOpenSaveDialog={setOpenSaveDialog}
             handleSaveDrawing={handleSaveDrawing} />
-        
     </div>
   )
 }

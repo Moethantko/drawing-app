@@ -3,50 +3,37 @@ import { Stage, Layer, Line, Rect, Circle, Image } from "react-konva";
 import ToolBar from "../ToolBar/ToolBar";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from 'uuid';
-
-interface Rectagle {
-  x: number,
-  y: number,
-  width: number,
-  height: number
-}
-
-interface LineInterface {
-  id: string
-  tool: string,
-  color: string,
-  points: [number, number]
-}
+import { LineInterface, RectagleInterface, CircleInterface, DrawingTool, DrawingColor } from '../Types/types'
   
 const Canvas = () => {
-    const [tool, setTool] = useState<string>("pen")
-    const [color, setColor] = useState<string>("#FF0000")
+    const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
+    const [color, setColor] = useState<DrawingColor>(DrawingColor.Red)
 
     const stageRef = useRef<any>(null)
-    const [uploadedImage, setUploadedImgage] = useState<any>(null)
+    const [uploadedImage, setUploadedImgage] = useState<HTMLImageElement>(null)
 
     const[isDrawing, setIsDrawing] = useState<boolean>(false)
 
-    const [lines, setLines] = useState<any>([])
+    const [lines, setLines] = useState<LineInterface[]>([])
 
-    const [rectangles, setRectangles] = useState<any>([])
-    const [newRectangle, setNewRectangle] = useState<any>([])
+    const [rectangles, setRectangles] = useState<RectagleInterface[]>([])
+    const [newRectangle, setNewRectangle] = useState<RectagleInterface[]>([])
 
-    const [circles, setCircles] = useState<any>([])
-    const [newCircle, setNewCircle] = useState<any>([])
+    const [circles, setCircles] = useState<CircleInterface[]>([])
+    const [newCircle, setNewCircle] = useState<CircleInterface[]>([])
 
     /* change the drawing tool */
-    const handleSelectTool = (tool: string) => {
+    const handleSelectTool = (tool: DrawingTool): void => {
       setTool(tool)
     }
 
     /* change the color of drawing tool */
-    const handleSelectColor = (color: string) => {
+    const handleSelectColor = (color: DrawingColor): void => {
       setColor(color)
     }
 
     /* erase all the drawings by emptying the all arrays and setting image to null */
-    const handleErase = () => {
+    const handleErase = (): void => {
       setLines([])
       setRectangles([])
       setCircles([])
@@ -54,7 +41,7 @@ const Canvas = () => {
     }
 
     /* upload the existing png image file and replace all current drawings on canvas */
-    const handleUploadImg = (img: string) => {
+    const handleUploadImg = (img: string): void => {
       //first, erase everything currently on canvas before uploading a new img
       handleErase()
 
@@ -66,7 +53,7 @@ const Canvas = () => {
     }
 
     /* download the current drawing as png file */
-    const handleDownload = (drawingTitle: string) => {
+    const handleDownload = (drawingTitle: string): void => {
       const dataURL = stageRef.current.toDataURL()
 
       const link = document.createElement('a')
@@ -79,46 +66,51 @@ const Canvas = () => {
     }
 
     /* handle mouse down event depending on current drawing tool */
-    const handleMouseDown = (e: KonvaEventObject<MouseEvent>) => {
+    const handleMouseDown = (e: KonvaEventObject<MouseEvent>): void => {
       
       const { x, y } = e.target.getStage().getPointerPosition()
       const id = uuidv4()
 
         switch (tool) {
-
-          case 'pen':
+          case DrawingTool.Pen:
             setIsDrawing(true)
-            setLines([...lines, { id, tool, color, points: [x, y] }])
+            const newPenLine: LineInterface = {
+              id, tool, color, points: [x, y]
+            }
+            setLines([...lines, newPenLine])
             break
 
-          case 'brush':
+          case DrawingTool.Brush:
             setIsDrawing(true)
-            setLines([...lines, { id, tool, color, points: [x, y] }])
+            const newBrushLine: LineInterface = {
+              id, tool, color, points: [x, y]
+            }
+            setLines([...lines, newBrushLine])
             break
 
-          case 'rect':
+          case DrawingTool.Rectangle:
             setIsDrawing(true)
             if (newRectangle.length === 0) {
-              setNewRectangle([{ id, x, y, width: 0, height: 0, color }])
+              const rectangle: RectagleInterface = { id, x, y, width: 0, height: 0, color }
+              setNewRectangle([rectangle])
             }
             break
 
-          case 'circle':
+          case DrawingTool.Cricle:
             setIsDrawing(true)
             if (newCircle.length === 0) {
-              setNewCircle([{ id, x, y, radius: 0, color }])
+              const circle: CircleInterface = { id, x, y, radius: 0, color }
+              setNewCircle([circle])
             }
             break
             
           default:
             // pass
-
         }
-
     };
 
     /* handle mouse move event depending on current drawing tool */
-    const handleMouseMove = (e: KonvaEventObject<MouseEvent>) => {
+    const handleMouseMove = (e: KonvaEventObject<MouseEvent>): void => {
 
       const stage = e.target.getStage()
       const { x, y } = stage.getPointerPosition()
@@ -126,62 +118,61 @@ const Canvas = () => {
 
       switch (tool) {
 
-        case 'pen':
+        case DrawingTool.Pen:
           /* Skip if user is not drawing */
           if (!isDrawing) {
             return
           }
           if (lines[lines.length - 1] !== undefined) {
-            let lastLine = lines[lines.length - 1]
+            let lastLine: LineInterface = lines[lines.length - 1]
             lastLine.points = lastLine.points.concat([x, y])
             lines.splice(lines.length - 1, 1, lastLine)
             setLines(lines.concat())
           }
           break
 
-        case 'brush':
+        case DrawingTool.Brush:
           /* Skip if user is not drawing */
           if (!isDrawing) {
             return
           }
 
           if (lines[lines.length - 1] !== undefined) {
-            let lastBrushLine = lines[lines.length - 1]
+            let lastBrushLine: LineInterface = lines[lines.length - 1]
             lastBrushLine.points = lastBrushLine.points.concat([x, y])
             lines.splice(lines.length - 1, 1, lastBrushLine)
             setLines(lines.concat())
           }
           break
 
-        case 'rect':
+        case DrawingTool.Rectangle:
           if (newRectangle.length === 1) {
             const sx = newRectangle[0].x
             const sy = newRectangle[0].y
 
-            setNewRectangle([
-              {
-                id,
-                x: sx,
-                y: sy,
-                width: x - sx,
-                height: y - sy,
-                color
-              }
-            ]);
+            const rectangle: RectagleInterface = {
+              id,
+              x: sx,
+              y: sy,
+              width: x - sx,
+              height: y - sy,
+              color
+            }
+            setNewRectangle([rectangle])
           }
           break
 
-        case 'circle':
+        case DrawingTool.Cricle:
           if (newCircle.length === 1) {
+            const sx: number = newCircle[0].x
+            const sy: number = newCircle[0].y
 
-            const sx = newCircle[0].x
-            const sy = newCircle[0].y
-
-            const newRadius = Math.sqrt(
+            const newRadius: number = Math.sqrt(
               Math.pow(x - sx, 2) + Math.pow(y - sy, 2)
-            );
+            )
 
-            setNewCircle([{ id, x: sx, y: sy, radius: newRadius, color }])
+            const circle: CircleInterface = { id, x: sx, y: sy, radius: newRadius, color }
+            setNewCircle([circle])
           }
           
           break
@@ -192,69 +183,74 @@ const Canvas = () => {
     };
 
     /* handle mouse up event depending on current drawing tool */
-    const handleMouseUp = (e: KonvaEventObject<MouseEvent>) => {
+    const handleMouseUp = (e: KonvaEventObject<MouseEvent>): void => {
 
       const { x, y } = e.target.getStage().getPointerPosition()
       const id = uuidv4()
 
       switch (tool) {
 
-        case 'pen':
+        case DrawingTool.Pen:
           setIsDrawing(false)
           break
 
-        case 'brush':
+        case DrawingTool.Brush:
           setIsDrawing(false)
           break
 
-        case 'rect':
+        case DrawingTool.Rectangle:
           if (newRectangle.length === 1) {
-            const sx = newRectangle[0].x
-            const sy = newRectangle[0].y
+            const sx: number = newRectangle[0].x
+            const sy: number = newRectangle[0].y
 
-            setNewRectangle([
-              {
-                id,
-                x: sx,
-                y: sy,
-                width: x - sx,
-                height: y - sy,
-                color
-              }
-            ])
+            const rectangle: RectagleInterface = {
+              id,
+              x: sx,
+              y: sy,
+              width: x - sx,
+              height: y - sy,
+              color
+            }
+
+            setNewRectangle([rectangle])
             
             setRectangles([...rectangles, ...newRectangle])
             setNewRectangle([])
           }
           break
 
-        case 'circle':
+        case DrawingTool.Cricle:
           if (newCircle.length === 1) {
-            const sx = newCircle[0].x
-            const sy = newCircle[0].y
+            const sx: number = newCircle[0].x
+            const sy: number = newCircle[0].y
 
-            const newRadius = Math.sqrt(
+            const newRadius: number = Math.sqrt(
               Math.pow(x - sx, 2) + Math.pow(y - sy, 2)
             );
 
-            setNewCircle([{
+            const circle: CircleInterface = {
               id,
               x: sx,
               y: sy,
               radius: newRadius,
               color
-            }])
+            }
+
+            setNewCircle([circle])
 
             setCircles([...circles, ...newCircle])
             setNewCircle([])
           }
           break
 
+        default:
+          // pass
+
       }
     };
 
-    const rectanglesToDraw = [...rectangles, ...newRectangle]
-    const circlesToDraw = [...circles, ...newCircle]
+    const rectanglesToDraw: RectagleInterface[] = [...rectangles, ...newRectangle]
+    const circlesToDraw: CircleInterface[] = [...circles, ...newCircle]
 
   return (
     <div>
@@ -278,13 +274,13 @@ const Canvas = () => {
         <Layer>
           {uploadedImage !== null && <Image image={uploadedImage} />}
 
-          {lines.map((line: any, i: any) => (
+          {lines.map((line: LineInterface, i: number) => (
                 <Line
                   className="hover:cursor-pointer"
                   key={i}
                   points={line.points}
                   stroke={line.color}
-                  strokeWidth={line.tool === 'pen' ? 4 : line.tool === 'brush' ? 25 : 4}
+                  strokeWidth={line.tool === DrawingTool.Pen ? 4 : line.tool === DrawingTool.Brush ? 25 : 4}
                   tension={0.1}
                   lineCap="round"
                   lineJoin="round"
@@ -293,7 +289,7 @@ const Canvas = () => {
               ))
           }
 
-          {rectanglesToDraw.map((rect: any) => (
+          {rectanglesToDraw.map((rect: RectagleInterface) => (
               <Rect
                 key={rect.id}
                 x={rect.x}
@@ -306,7 +302,7 @@ const Canvas = () => {
               />
             ))}
 
-          {circlesToDraw.map((circle: any) => (
+          {circlesToDraw.map((circle: CircleInterface) => (
             <Circle
               key={circle.id}
               x={circle.x}
