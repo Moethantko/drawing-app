@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Stage, Layer, Line, Rect, Circle, Image } from "react-konva";
 import ToolBar from "../ToolBar/ToolBar";
 import { KonvaEventObject } from "konva/lib/Node";
@@ -6,6 +6,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { LineInterface, RectagleInterface, CircleInterface, DrawingTool, DrawingColor } from '../Types/types'
   
 const Canvas = () => {
+
+    const CANVAS_WIDTH = 1920
+
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
     const [color, setColor] = useState<DrawingColor>(DrawingColor.Red)
 
@@ -68,8 +71,8 @@ const Canvas = () => {
     /* handle mouse down event depending on current drawing tool */
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>): void => {
       
-      const { x, y } = e.target.getStage().getPointerPosition()
-      const id = uuidv4()
+      const { x, y } = e.target.getStage().getPointerPosition() // current coordinates (x,y) of mouse pointer
+      const id = uuidv4() // id generated for each drawing
 
         switch (tool) {
           case DrawingTool.Pen:
@@ -253,7 +256,7 @@ const Canvas = () => {
     const circlesToDraw: CircleInterface[] = [...circles, ...newCircle]
 
   return (
-    <div>
+    <div className={`w-[${CANVAS_WIDTH}]px`}>
         <ToolBar 
           onSelectTool={handleSelectTool} 
           onSelectColor={handleSelectColor}
@@ -263,59 +266,55 @@ const Canvas = () => {
          />
 
         <Stage
+          className='overflow-x-auto whitespace-nowrap mx-6 mt-6 shadow-inner shadow-2xl shadow-slate-400 rounded-lg'
           ref={stageRef}
-          className='mx-6 mt-6 shadow-inner shadow-2xl shadow-slate-400 rounded-lg'
-          width={window.innerWidth}
+          width={CANVAS_WIDTH}
           height={window.innerHeight}
           onMouseDown={handleMouseDown}
           onMousemove={handleMouseMove}
           onMouseup={handleMouseUp}>
-
-        <Layer>
-          {uploadedImage !== null && <Image image={uploadedImage} />}
-
-          {lines.map((line: LineInterface, i: number) => (
-                <Line
-                  className="hover:cursor-pointer"
-                  key={i}
-                  points={line.points}
-                  stroke={line.color}
-                  strokeWidth={line.tool === DrawingTool.Pen ? 4 : line.tool === DrawingTool.Brush ? 25 : 4}
-                  tension={0.1}
-                  lineCap="round"
-                  lineJoin="round"
-                  globalCompositeOperation={"source-over"}
+          <Layer>
+            {uploadedImage !== null && <Image image={uploadedImage} />}
+            {lines.map((line: LineInterface, i: number) => (
+                  <Line
+                    className="hover:cursor-pointer"
+                    key={i}
+                    points={line.points}
+                    stroke={line.color}
+                    strokeWidth={line.tool === DrawingTool.Pen ? 4 : line.tool === DrawingTool.Brush ? 25 : 4}
+                    tension={0.1}
+                    lineCap="round"
+                    lineJoin="round"
+                    globalCompositeOperation={"source-over"}
+                  />
+                ))
+            }
+            {rectanglesToDraw.map((rect: RectagleInterface) => (
+                <Rect
+                  key={rect.id}
+                  x={rect.x}
+                  y={rect.y}
+                  width={rect.width}
+                  height={rect.height}
+                  fill="transparent"
+                  stroke={rect.color}
+                  strokeWidth={4}
                 />
-              ))
-          }
-
-          {rectanglesToDraw.map((rect: RectagleInterface) => (
-              <Rect
-                key={rect.id}
-                x={rect.x}
-                y={rect.y}
-                width={rect.width}
-                height={rect.height}
+              ))}
+            {circlesToDraw.map((circle: CircleInterface) => (
+              <Circle
+                key={circle.id}
+                x={circle.x}
+                y={circle.y}
+                radius={circle.radius}
+                fillEnabled={true}
                 fill="transparent"
-                stroke={rect.color}
+                stroke={circle.color}
                 strokeWidth={4}
               />
             ))}
-
-          {circlesToDraw.map((circle: CircleInterface) => (
-            <Circle
-              key={circle.id}
-              x={circle.x}
-              y={circle.y}
-              radius={circle.radius}
-              fillEnabled={true}
-              fill="transparent"
-              stroke={circle.color}
-              strokeWidth={4}
-            />
-          ))}
-        </Layer>
-      </Stage>
+          </Layer>
+        </Stage>
     </div>
   )
 }

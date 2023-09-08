@@ -78,7 +78,7 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
     };
 
   return (
-    <div className='mt-4 ml-6'>
+    <div className={`mt-4 ml-6 w-[${window.innerWidth}]`}>
         <div className='flex flex-wrap w-min sm:flex-nowrap'>
             <div className='flex'>
                 <div className='flex border-[1px] border-gray-300 rounded-md p-1 mr-2 mt-2 md:p-2'>

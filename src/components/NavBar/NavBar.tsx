@@ -4,7 +4,7 @@ import icon from '../../assets/stemsims-icon.png'
 const NavBar = () => {
   
   return (
-    <div className='flex justify-around items-center bg-gray-100 p-2 font-medium font-jost'>
+    <div className={`flex justify-around items-center bg-gray-100 p-2 font-medium font-jost w-${window.innerWidth}`}>
       <div>
         <a href="https://stemsims.com/about/" target='_blank' className='mr-4 hover:cursor-pointer text-xl'>About</a>
         <a href="https://stemsims.com/subscribe" target='_blank' className='hover:cursor-pointer text-xl'>Pricing</a>
