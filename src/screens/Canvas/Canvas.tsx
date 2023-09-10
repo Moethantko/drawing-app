@@ -1,12 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import { Stage, Layer, Line, Rect, Circle, Image } from "react-konva";
-import ToolBar from "../ToolBar/ToolBar";
+import ToolBar from "../../components/ToolBar/ToolBar";
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from 'uuid';
-import { LineInterface, RectagleInterface, CircleInterface, DrawingTool, DrawingColor } from '../Types/types'
+import { LineInterface, RectagleInterface, CircleInterface, DrawingTool, DrawingColor } from '../../Types/types'
   
 const Canvas = () => {
-
     const CANVAS_WIDTH = 1920
 
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
@@ -15,7 +14,8 @@ const Canvas = () => {
     const stageRef = useRef<any>(null)
     const [uploadedImage, setUploadedImgage] = useState<HTMLImageElement>(null)
 
-    const[isDrawing, setIsDrawing] = useState<boolean>(false)
+    const [isDrawing, setIsDrawing] = useState<boolean>(false)
+    const [isDragging, setIsDragging] = useState<boolean>(false)
 
     const [lines, setLines] = useState<LineInterface[]>([])
 
@@ -70,13 +70,13 @@ const Canvas = () => {
 
     /* handle mouse down event depending on current drawing tool */
     const handleMouseDown = (e: KonvaEventObject<MouseEvent>): void => {
+      setIsDrawing(true)
       
       const { x, y } = e.target.getStage().getPointerPosition() // current coordinates (x,y) of mouse pointer
       const id = uuidv4() // id generated for each drawing
 
         switch (tool) {
           case DrawingTool.Pen:
-            setIsDrawing(true)
             const newPenLine: LineInterface = {
               id, tool, color, points: [x, y]
             }
@@ -84,7 +84,6 @@ const Canvas = () => {
             break
 
           case DrawingTool.Brush:
-            setIsDrawing(true)
             const newBrushLine: LineInterface = {
               id, tool, color, points: [x, y]
             }
@@ -92,7 +91,6 @@ const Canvas = () => {
             break
 
           case DrawingTool.Rectangle:
-            setIsDrawing(true)
             if (newRectangle.length === 0) {
               const rectangle: RectagleInterface = { id, x, y, width: 0, height: 0, color }
               setNewRectangle([rectangle])
@@ -100,7 +98,6 @@ const Canvas = () => {
             break
 
           case DrawingTool.Cricle:
-            setIsDrawing(true)
             if (newCircle.length === 0) {
               const circle: CircleInterface = { id, x, y, radius: 0, color }
               setNewCircle([circle])
@@ -116,16 +113,16 @@ const Canvas = () => {
     const handleMouseMove = (e: KonvaEventObject<MouseEvent>): void => {
 
       const stage = e.target.getStage()
+
       const { x, y } = stage.getPointerPosition()
       const id = uuidv4()
+
+      /* Skip if user is not drawing */
+      if (!isDrawing) return
 
       switch (tool) {
 
         case DrawingTool.Pen:
-          /* Skip if user is not drawing */
-          if (!isDrawing) {
-            return
-          }
           if (lines[lines.length - 1] !== undefined) {
             let lastLine: LineInterface = lines[lines.length - 1]
             lastLine.points = lastLine.points.concat([x, y])
@@ -135,11 +132,6 @@ const Canvas = () => {
           break
 
         case DrawingTool.Brush:
-          /* Skip if user is not drawing */
-          if (!isDrawing) {
-            return
-          }
-
           if (lines[lines.length - 1] !== undefined) {
             let lastBrushLine: LineInterface = lines[lines.length - 1]
             lastBrushLine.points = lastBrushLine.points.concat([x, y])
@@ -191,14 +183,14 @@ const Canvas = () => {
       const { x, y } = e.target.getStage().getPointerPosition()
       const id = uuidv4()
 
+      setIsDrawing(false)
+
       switch (tool) {
 
         case DrawingTool.Pen:
-          setIsDrawing(false)
           break
 
         case DrawingTool.Brush:
-          setIsDrawing(false)
           break
 
         case DrawingTool.Rectangle:
@@ -248,7 +240,6 @@ const Canvas = () => {
 
         default:
           // pass
-
       }
     };
 
@@ -286,6 +277,10 @@ const Canvas = () => {
                     lineCap="round"
                     lineJoin="round"
                     globalCompositeOperation={"source-over"}
+                    draggable
+                    onDragStart={() => setIsDrawing(false)}
+                    onDragMove={() => setIsDrawing(false)}
+                    onDragEnd={() => setIsDrawing(false)}
                   />
                 ))
             }
@@ -299,6 +294,7 @@ const Canvas = () => {
                   fill="transparent"
                   stroke={rect.color}
                   strokeWidth={4}
+                  draggable
                 />
               ))}
             {circlesToDraw.map((circle: CircleInterface) => (
@@ -311,6 +307,7 @@ const Canvas = () => {
                 fill="transparent"
                 stroke={circle.color}
                 strokeWidth={4}
+                draggable
               />
             ))}
           </Layer>

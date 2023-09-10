@@ -11,7 +11,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import BrushIcon from '@mui/icons-material/Brush';
 import EraseConfirmDialog from '../Dialogs/EraseConfirmDialog';
 import SaveDialog from '../Dialogs/SaveDialog';
-import { DrawingTool, DrawingColor } from '../Types/types';
+import { DrawingTool, DrawingColor } from '../../Types/types';
 
 /* props to handle methods from Canvas component */
 interface SelectToolProps {
@@ -84,8 +84,8 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
     };
 
   return (
-    <div className={`mt-4 ml-6 w-[${window.innerWidth}]`}>
-        <div className='flex flex-wrap w-min sm:flex-nowrap'>
+    <div className={`mt-4 mx-6 w-[${window.innerWidth}]`}>
+        <div className='flex justify-between flex-wrap w-full sm:flex-nowrap'>
             <div className='flex'>
                 <div className='flex border-[1px] border-gray-300 rounded-md p-1 mr-2 mt-2 md:p-2'>
                     <CreateIcon
