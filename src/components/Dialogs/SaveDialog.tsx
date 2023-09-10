@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { ChangeEvent, useState } from 'react'
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -17,10 +17,22 @@ const SaveDialog: React.FC<SaveDialogProps> = ({ openSaveDialog, drawingTitle, s
 
     const [drawingTitleText, setDrawingTitleText] = useState<string>(drawingTitle)
 
+    const [titleCharCount, setTitleCharCount] = useState<number>(drawingTitle.length)
+    const CHARLIMIT = 50
+
+    const handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (e.target.value.length <= CHARLIMIT) {
+            setDrawingTitleText(e.currentTarget.value)
+            setTitleCharCount(e.currentTarget.value.length)
+        }
+    }
+
   return (
     <div>
         <Dialog onClose={() => setOpenSaveDialog(false)} open={openSaveDialog}>
-            <DialogTitle className='bg-green-color text-white'>Save the drawing</DialogTitle>
+            <DialogTitle className='bg-green-color text-white'>
+                <span className='font-jost text-2xl'>Save the drawing</span>
+            </DialogTitle>
             <DialogContent>
                 <TextField
                 autoFocus
@@ -31,7 +43,8 @@ const SaveDialog: React.FC<SaveDialogProps> = ({ openSaveDialog, drawingTitle, s
                 fullWidth
                 variant="standard"
                 value={drawingTitleText}
-                onChange={(e) => setDrawingTitleText(e.currentTarget.value)} />
+                onChange={(e) => handleFileNameChange(e)} />
+                <div className='float-right bg-green-color text-white px-3 py-1 rounded-md'>{titleCharCount}/{CHARLIMIT}</div>
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => setOpenSaveDialog(false)}>Cancel</Button>

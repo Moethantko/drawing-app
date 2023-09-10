@@ -11,7 +11,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import BrushIcon from '@mui/icons-material/Brush';
 import EraseConfirmDialog from '../Dialogs/EraseConfirmDialog';
 import SaveDialog from '../Dialogs/SaveDialog';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEraser } from '@fortawesome/free-solid-svg-icons';
 import { DrawingTool, DrawingColor } from '../../Types/types';
+
 
 /* props to handle methods from Canvas component */
 interface SelectToolProps {
@@ -109,9 +112,14 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
                         : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
                         onClick={() => handleToolChange(DrawingTool.Cricle)} />
+                    {/* <FontAwesomeIcon 
+                          className={tool === DrawingTool.Eraser ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
+                              : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer'}
+                            icon={faEraser}
+                            size={tool === DrawingTool.Eraser ? 'xl' : '2xl'}
+                          onClick={() => handleToolChange(DrawingTool.Eraser)} /> */}
                     <AutoFixNormalIcon
-                        className={tool === DrawingTool.Eraser ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
-                        : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
+                        className={'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
                         onClick={() => setOpenEraseConfirmDialog(true)} />
                 </div>

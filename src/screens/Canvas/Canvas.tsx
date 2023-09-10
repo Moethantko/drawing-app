@@ -9,7 +9,7 @@ const Canvas = () => {
     const CANVAS_WIDTH = 1920
 
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
-    const [color, setColor] = useState<DrawingColor>(DrawingColor.Red)
+    const [color, setColor] = useState<DrawingColor>(DrawingColor.Black)
 
     const stageRef = useRef<any>(null)
     const [uploadedImage, setUploadedImgage] = useState<HTMLImageElement>(null)
@@ -89,6 +89,13 @@ const Canvas = () => {
             }
             setLines([...lines, newBrushLine])
             break
+          
+          case DrawingTool.Eraser:
+            const newEraserLine: LineInterface = {
+              id, tool, color, points: [x, y]
+            }
+            setLines([...lines, newEraserLine])
+            break
 
           case DrawingTool.Rectangle:
             if (newRectangle.length === 0) {
@@ -136,6 +143,15 @@ const Canvas = () => {
             let lastBrushLine: LineInterface = lines[lines.length - 1]
             lastBrushLine.points = lastBrushLine.points.concat([x, y])
             lines.splice(lines.length - 1, 1, lastBrushLine)
+            setLines(lines.concat())
+          }
+          break
+
+        case DrawingTool.Eraser:
+          if (lines[lines.length - 1] !== undefined) {
+            let lastEraseLine: LineInterface = lines[lines.length - 1]
+            lastEraseLine.points = lastEraseLine.points.concat([x, y])
+            lines.splice(lines.length - 1, 1, lastEraseLine)
             setLines(lines.concat())
           }
           break
@@ -191,6 +207,9 @@ const Canvas = () => {
           break
 
         case DrawingTool.Brush:
+          break
+
+        case DrawingTool.Eraser:
           break
 
         case DrawingTool.Rectangle:
@@ -272,16 +291,11 @@ const Canvas = () => {
                     key={i}
                     points={line.points}
                     stroke={line.color}
-                    strokeWidth={line.tool === DrawingTool.Pen ? 4 : line.tool === DrawingTool.Brush ? 25 : 4}
+                    strokeWidth={line.tool === DrawingTool.Pen ? 4 : line.tool === DrawingTool.Brush ? 25 : 25}
                     tension={0.1}
                     lineCap="round"
                     lineJoin="round"
-                    globalCompositeOperation={"source-over"}
-                    draggable
-                    onDragStart={() => setIsDrawing(false)}
-                    onDragMove={() => setIsDrawing(false)}
-                    onDragEnd={() => setIsDrawing(false)}
-                  />
+                    globalCompositeOperation={line.tool === DrawingTool.Eraser ? 'destination-out' : 'source-over'} />
                 ))
             }
             {rectanglesToDraw.map((rect: RectagleInterface) => (
@@ -293,9 +307,7 @@ const Canvas = () => {
                   height={rect.height}
                   fill="transparent"
                   stroke={rect.color}
-                  strokeWidth={4}
-                  draggable
-                />
+                  strokeWidth={4} />
               ))}
             {circlesToDraw.map((circle: CircleInterface) => (
               <Circle
@@ -306,9 +318,7 @@ const Canvas = () => {
                 fillEnabled={true}
                 fill="transparent"
                 stroke={circle.color}
-                strokeWidth={4}
-                draggable
-              />
+                strokeWidth={4} />
             ))}
           </Layer>
         </Stage>

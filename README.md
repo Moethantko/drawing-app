@@ -31,6 +31,7 @@ npm  start
 ## Core features
 
  1. Draw lines (small and large strokes), rectangles, circles using mouse.
+ 2. Drag and drop drawings (might interfere with drawing).
  2. Erase all drawings on canvas.
  3. Choose any color out of selection of five colors.
  4. Save (hypothetically) and name the current drawing.
@@ -40,7 +41,7 @@ npm  start
 
 ## Future features
 
- 1. Allows dragging and dropping drawings across canvas.
+ 1. Allows dragging and dropping without interfering with drawing mode.
  2. Manual eraser using mouse.
  3. More shapes such as arrow, polygons.
  4. Fill the whole shapes with color.
