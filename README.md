@@ -39,14 +39,14 @@ npm  start
  6. Import existing PNG image file and continue drawing on top of it.
  7. Responsive to various screen sizes (large, medium, mobile).
  8. Choose the size of drawing tool, ranging from (small, medium, large).
+ 9. Allows dragging and dropping using the Mover drawing tool.
 
 ## Future features
 
- 1. Allows dragging and dropping without interfering with drawing mode.
- 2. Manual eraser using mouse.
- 3. More shapes such as arrow, polygons.
- 4. Fill the whole shapes with color.
- 5. Develop backend and save the drawing data (metadata and image file) in MySQL database.
+ 1. Manual eraser using mouse.
+ 2. More shapes such as arrow, polygons.
+ 3. Fill the whole shapes with color.
+ 4. Develop backend and save the drawing data (metadata and image file) in MySQL database.
 
 ## Saving in MySQL database and backend
 
