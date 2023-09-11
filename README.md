@@ -47,6 +47,7 @@ npm  start
  2. More shapes such as arrow, polygons.
  3. Fill the whole shapes with color.
  4. Develop backend and save the drawing data (metadata and image file) in MySQL database.
+ 5. Unit testing or End-To-End Testing.
 
 ## Saving in MySQL database and backend
 

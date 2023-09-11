@@ -36,6 +36,7 @@ const Canvas = () => {
       }
     }
 
+    /* change the drawing tool size */
     const handleSelectToolSize = (size: string): void => {
       setToolSize(size)
     }
@@ -331,7 +332,6 @@ const Canvas = () => {
             {uploadedImage !== null && <Image image={uploadedImage} />}
             {lines.map((line: LineInterface, i: number) => (
                   <Line
-                    className="hover:cursor-pointer"
                     key={i}
                     points={line.points}
                     stroke={line.color}
