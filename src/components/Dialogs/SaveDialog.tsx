@@ -20,6 +20,7 @@ const SaveDialog: React.FC<SaveDialogProps> = ({ openSaveDialog, drawingTitle, s
     const [titleCharCount, setTitleCharCount] = useState<number>(drawingTitle.length)
     const CHARLIMIT = 50
 
+    /* handle drawing title change and limit title character count to no more than CHARLIMIT */
     const handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (e.target.value.length <= CHARLIMIT) {
             setDrawingTitleText(e.currentTarget.value)
