@@ -7,6 +7,7 @@ import AutoFixNormalIcon from '@mui/icons-material/AutoFixNormal';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 import SaveIcon from '@mui/icons-material/Save';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import PanToolIcon from '@mui/icons-material/PanTool';
 import DownloadIcon from '@mui/icons-material/Download';
 import BrushIcon from '@mui/icons-material/Brush';
 import EraseConfirmDialog from '../Dialogs/EraseConfirmDialog';
@@ -119,6 +120,11 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectToolSize, on
                         : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
                         onClick={() => handleToolChange(DrawingTool.Cricle)} />
+                    <PanToolIcon
+                        className={tool === DrawingTool.Mover ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
+                        : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
+                        fontSize='large'
+                        onClick={() => handleToolChange(DrawingTool.Mover)} />
                     <AutoFixNormalIcon
                         className={'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'

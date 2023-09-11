@@ -30,7 +30,7 @@ export enum DrawingTool {
   Rectangle = 'rectangle',
   Cricle = 'circle',
   Brush = 'brush',
-  Eraser = 'eraser',
+  Mover = 'mover',
 }
 
 export enum DrawingColor {

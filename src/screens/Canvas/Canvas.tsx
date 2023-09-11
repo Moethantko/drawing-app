@@ -16,7 +16,7 @@ const Canvas = () => {
     const [uploadedImage, setUploadedImgage] = useState<HTMLImageElement>(null)
 
     const [isDrawing, setIsDrawing] = useState<boolean>(false)
-    const [isDragging, setIsDragging] = useState<boolean>(false)
+    const [isDraggable, setIsDraggable] = useState<boolean>(false)
 
     const [lines, setLines] = useState<LineInterface[]>([])
 
@@ -29,6 +29,11 @@ const Canvas = () => {
     /* change the drawing tool */
     const handleSelectTool = (tool: DrawingTool): void => {
       setTool(tool)
+      if (tool === DrawingTool.Mover) {
+        setIsDraggable(true)
+      } else {
+        setIsDraggable(false)
+      }
     }
 
     const handleSelectToolSize = (size: string): void => {
@@ -143,13 +148,6 @@ const Canvas = () => {
             }
             setLines([...lines, newBrushLine])
             break
-          
-          case DrawingTool.Eraser:
-            const newEraserLine: LineInterface = {
-              id, tool, color, points: [x, y], toolSize
-            }
-            setLines([...lines, newEraserLine])
-            break
 
           case DrawingTool.Rectangle:
             if (newRectangle.length === 0) {
@@ -197,15 +195,6 @@ const Canvas = () => {
             let lastBrushLine: LineInterface = lines[lines.length - 1]
             lastBrushLine.points = lastBrushLine.points.concat([x, y])
             lines.splice(lines.length - 1, 1, lastBrushLine)
-            setLines(lines.concat())
-          }
-          break
-
-        case DrawingTool.Eraser:
-          if (lines[lines.length - 1] !== undefined) {
-            let lastEraseLine: LineInterface = lines[lines.length - 1]
-            lastEraseLine.points = lastEraseLine.points.concat([x, y])
-            lines.splice(lines.length - 1, 1, lastEraseLine)
             setLines(lines.concat())
           }
           break
@@ -262,9 +251,6 @@ const Canvas = () => {
           break
 
         case DrawingTool.Brush:
-          break
-
-        case DrawingTool.Eraser:
           break
 
         case DrawingTool.Rectangle:
@@ -353,7 +339,8 @@ const Canvas = () => {
                     tension={0.1}
                     lineCap="round"
                     lineJoin="round"
-                    globalCompositeOperation={line.tool === DrawingTool.Eraser ? 'destination-out' : 'source-over'} />
+                    globalCompositeOperation={'source-over'}
+                    draggable={isDraggable} />
                 ))
             }
             {rectanglesToDraw.map((rect: RectagleInterface) => (
@@ -365,7 +352,8 @@ const Canvas = () => {
                   height={rect.height}
                   fill="transparent"
                   stroke={rect.color}
-                  strokeWidth={handleChangeStrokeWidth(DrawingTool.Rectangle, rect.toolSize)} />
+                  strokeWidth={handleChangeStrokeWidth(DrawingTool.Rectangle, rect.toolSize)}
+                  draggable={isDraggable} />
               ))}
             {circlesToDraw.map((circle: CircleInterface) => (
               <Circle
@@ -376,7 +364,8 @@ const Canvas = () => {
                 fillEnabled={true}
                 fill="transparent"
                 stroke={circle.color}
-                strokeWidth={handleChangeStrokeWidth(DrawingTool.Cricle, circle.toolSize)} />
+                strokeWidth={handleChangeStrokeWidth(DrawingTool.Cricle, circle.toolSize)}
+                draggable={isDraggable} />
             ))}
           </Layer>
         </Stage>
