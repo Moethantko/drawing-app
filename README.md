@@ -38,6 +38,7 @@ npm  start
  5. Download the drawing. The downloaded file name will reflect the current drawing title or name.
  6. Import existing PNG image file and continue drawing on top of it.
  7. Responsive to various screen sizes (large, medium, mobile).
+ 8. Choose the size of drawing tool, ranging from (small, medium, large).
 
 ## Future features
 
