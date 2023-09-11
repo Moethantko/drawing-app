@@ -46,7 +46,7 @@ const DrawingToolSizeContainer: React.FC<ToolSizeContainerProps> = ({ toolType, 
                          />
                 </div>
             ) : toolType === DrawingTool.Brush ? (
-                <div className='absolute bottom-10 left-12 flex flex-row items-center border-[1px] border-slate-300 rounded-md px-1'>
+                <div className='absolute bottom-10 left-6 flex flex-row items-center border-[1px] border-slate-300 rounded-md px-1'>
                     <BrushIcon 
                         className={toolSize === 'sm' ? 'mr-1 hover:cursor-pointer bg-black text-white p-1 rounded-sm'
                         : 'mr-1 hover:cursor-pointer'}
@@ -69,7 +69,7 @@ const DrawingToolSizeContainer: React.FC<ToolSizeContainerProps> = ({ toolType, 
                          />
                 </div>
             ) : toolType === DrawingTool.Rectangle ? (
-                <div className='absolute bottom-10 left-20 flex flex-row items-center border-[1px] border-slate-300 rounded-md px-1'>
+                <div className='absolute bottom-10 left-16 flex flex-row items-center border-[1px] border-slate-300 rounded-md px-1'>
                     <RectangleIcon 
                         className={toolSize === 'sm' ? 'mr-1 hover:cursor-pointer bg-black text-white p-1 rounded-sm'
                         : 'mr-1 hover:cursor-pointer'}
@@ -92,7 +92,7 @@ const DrawingToolSizeContainer: React.FC<ToolSizeContainerProps> = ({ toolType, 
                          />
                 </div>
             ) : toolType === DrawingTool.Cricle ? (
-                <div className='absolute bottom-10 left-32 flex flex-row items-center border-[1px] border-slate-300 rounded-md px-1'>
+                <div className='absolute bottom-10 left-24 flex flex-row items-center border-[1px] border-slate-300 rounded-md px-1'>
                     <CircleIcon 
                         className={toolSize === 'sm' ? 'mr-1 hover:cursor-pointer bg-black text-white p-1 rounded-sm'
                         : 'mr-1 hover:cursor-pointer'}
