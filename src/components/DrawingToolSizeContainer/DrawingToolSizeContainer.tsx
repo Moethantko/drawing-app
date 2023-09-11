@@ -14,6 +14,7 @@ const DrawingToolSizeContainer: React.FC<ToolSizeContainerProps> = ({ toolType, 
 
     const [toolSize, setToolSize] = useState<string>('sm')
 
+    /* select the tool size (small, medium, large) */
     const handleToolSizeChange = (size: string) => {
         setToolSize(size)
         onSelectToolSize(size)
