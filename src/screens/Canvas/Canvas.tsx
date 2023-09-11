@@ -48,6 +48,55 @@ const Canvas = () => {
       setUploadedImgage(null)
     }
 
+    /* determine the stroke width based on drawing tool type and size (sm, md, lg) */
+    const handleChangeStrokeWidth = (tool: DrawingTool, size: string): number => {
+      switch (tool) {
+        case DrawingTool.Pen:
+          if (size === 'sm') {
+            return 5
+          } else if (size === 'md') {
+            return 10
+          } else {
+            return 15
+          }
+          break
+        
+        case DrawingTool.Brush:
+          if (size === 'sm') {
+            return 25
+          } else if (size === 'md') {
+            return 30
+          } else {
+            return 35
+          }
+          break
+
+        case DrawingTool.Rectangle:
+          if (size === 'sm') {
+            return 5
+          } else if (size === 'md') {
+            return 8
+          } else {
+            return 13
+          }
+          break
+
+        case DrawingTool.Cricle:
+          if (size === 'sm') {
+            return 5
+          } else if (size === 'md') {
+            return 8
+          } else {
+            return 13
+          }
+          break
+
+        default:
+          break
+        
+      }
+    }
+
     /* upload the existing png image file and replace all current drawings on canvas */
     const handleUploadImg = (img: string): void => {
       //first, erase everything currently on canvas before uploading a new img
@@ -83,35 +132,35 @@ const Canvas = () => {
         switch (tool) {
           case DrawingTool.Pen:
             const newPenLine: LineInterface = {
-              id, tool, color, points: [x, y]
+              id, tool, color, points: [x, y], toolSize,
             }
             setLines([...lines, newPenLine])
             break
 
           case DrawingTool.Brush:
             const newBrushLine: LineInterface = {
-              id, tool, color, points: [x, y]
+              id, tool, color, points: [x, y], toolSize
             }
             setLines([...lines, newBrushLine])
             break
           
           case DrawingTool.Eraser:
             const newEraserLine: LineInterface = {
-              id, tool, color, points: [x, y]
+              id, tool, color, points: [x, y], toolSize
             }
             setLines([...lines, newEraserLine])
             break
 
           case DrawingTool.Rectangle:
             if (newRectangle.length === 0) {
-              const rectangle: RectagleInterface = { id, x, y, width: 0, height: 0, color }
+              const rectangle: RectagleInterface = { id, x, y, width: 0, height: 0, color, toolSize }
               setNewRectangle([rectangle])
             }
             break
 
           case DrawingTool.Cricle:
             if (newCircle.length === 0) {
-              const circle: CircleInterface = { id, x, y, radius: 0, color }
+              const circle: CircleInterface = { id, x, y, radius: 0, color, toolSize }
               setNewCircle([circle])
             }
             break
@@ -172,7 +221,8 @@ const Canvas = () => {
               y: sy,
               width: x - sx,
               height: y - sy,
-              color
+              color,
+              toolSize
             }
             setNewRectangle([rectangle])
           }
@@ -187,7 +237,7 @@ const Canvas = () => {
               Math.pow(x - sx, 2) + Math.pow(y - sy, 2)
             )
 
-            const circle: CircleInterface = { id, x: sx, y: sy, radius: newRadius, color }
+            const circle: CircleInterface = { id, x: sx, y: sy, radius: newRadius, color, toolSize }
             setNewCircle([circle])
           }
           
@@ -228,7 +278,8 @@ const Canvas = () => {
               y: sy,
               width: x - sx,
               height: y - sy,
-              color
+              color,
+              toolSize
             }
 
             setNewRectangle([rectangle])
@@ -252,7 +303,8 @@ const Canvas = () => {
               x: sx,
               y: sy,
               radius: newRadius,
-              color
+              color,
+              toolSize
             }
 
             setNewCircle([circle])
@@ -278,6 +330,7 @@ const Canvas = () => {
           onErase={handleErase}
           onDownload={handleDownload}
           onUploadImg={handleUploadImg}
+          onSelectToolSize={handleSelectToolSize}
          />
 
         <Stage
@@ -296,7 +349,7 @@ const Canvas = () => {
                     key={i}
                     points={line.points}
                     stroke={line.color}
-                    strokeWidth={line.tool === DrawingTool.Pen ? 4 : line.tool === DrawingTool.Brush ? 25 : 25}
+                    strokeWidth={handleChangeStrokeWidth(line.tool === DrawingTool.Pen ? DrawingTool.Pen : DrawingTool.Brush, line.toolSize)}
                     tension={0.1}
                     lineCap="round"
                     lineJoin="round"
@@ -312,7 +365,7 @@ const Canvas = () => {
                   height={rect.height}
                   fill="transparent"
                   stroke={rect.color}
-                  strokeWidth={4} />
+                  strokeWidth={handleChangeStrokeWidth(DrawingTool.Rectangle, rect.toolSize)} />
               ))}
             {circlesToDraw.map((circle: CircleInterface) => (
               <Circle
@@ -323,7 +376,7 @@ const Canvas = () => {
                 fillEnabled={true}
                 fill="transparent"
                 stroke={circle.color}
-                strokeWidth={4} />
+                strokeWidth={handleChangeStrokeWidth(DrawingTool.Cricle, circle.toolSize)} />
             ))}
           </Layer>
         </Stage>

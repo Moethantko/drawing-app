@@ -11,8 +11,6 @@ import DownloadIcon from '@mui/icons-material/Download';
 import BrushIcon from '@mui/icons-material/Brush';
 import EraseConfirmDialog from '../Dialogs/EraseConfirmDialog';
 import SaveDialog from '../Dialogs/SaveDialog';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEraser } from '@fortawesome/free-solid-svg-icons';
 import { DrawingTool, DrawingColor } from '../../Types/types';
 import DrawingToolSizeContainer from '../DrawingToolSizeContainer/DrawingToolSizeContainer';
 
@@ -20,13 +18,14 @@ import DrawingToolSizeContainer from '../DrawingToolSizeContainer/DrawingToolSiz
 /* props to handle methods from Canvas component */
 interface ToolBarProps {
     onSelectTool: (tool: DrawingTool) => void;
+    onSelectToolSize: (size: string) => void;
     onSelectColor: (color: DrawingColor) => void;
     onErase: () => void;
     onDownload: (title: string) => void;
     onUploadImg: (img: any) => void;
 }
 
-const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectColor, onErase, onDownload, onUploadImg }: ToolBarProps) => {
+const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectToolSize, onSelectColor, onErase, onDownload, onUploadImg }: ToolBarProps) => {
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
     const [color, setColor] = useState<string>(DrawingColor.Red)
 
@@ -36,7 +35,7 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectColor, onEra
     const [drawingTitle, setDrawingTitle] = useState<string>('Untitled Drawing')
     const [hasSaved, setHasSaved] = useState<boolean>(false)
 
-    const [displaySizeContainer, setDisplaySizeContainer] = useState<boolean>(false)
+    const [displaySizeContainer, setDisplaySizeContainer] = useState<boolean>(true)
 
     const fileInputRef = useRef<any>(null)
 
@@ -96,7 +95,7 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectColor, onEra
             <div className='flex'>
                 {
                     displaySizeContainer && (
-                        <DrawingToolSizeContainer toolType={tool} />
+                        <DrawingToolSizeContainer toolType={tool} onSelectToolSize={onSelectToolSize} />
                     )
                 }
                 <div className='flex border-[1px] border-gray-300 rounded-md p-1 mr-2 mt-2 md:p-2'>
@@ -120,12 +119,6 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectColor, onEra
                         : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
                         onClick={() => handleToolChange(DrawingTool.Cricle)} />
-                    {/* <FontAwesomeIcon 
-                          className={tool === DrawingTool.Eraser ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
-                              : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer'}
-                            icon={faEraser}
-                            size={tool === DrawingTool.Eraser ? 'xl' : '2xl'}
-                          onClick={() => handleToolChange(DrawingTool.Eraser)} /> */}
                     <AutoFixNormalIcon
                         className={'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'

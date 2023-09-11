@@ -2,7 +2,8 @@ export interface LineInterface {
     id: string
     tool: string
     color: string
-    points: number[]
+    points: number[],
+    toolSize: string
   }
   
 export interface RectagleInterface {
@@ -11,7 +12,8 @@ export interface RectagleInterface {
     height: number
     x: number
     y: number
-    color: string
+    color: string,
+    toolSize: string
   }
   
 export interface CircleInterface {
@@ -19,7 +21,8 @@ export interface CircleInterface {
     x: number
     y: number
     radius: number
-    color: string
+    color: string,
+    toolSize: string
   }
   
 export enum DrawingTool {
