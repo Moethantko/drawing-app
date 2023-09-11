@@ -9,6 +9,7 @@ const Canvas = () => {
     const CANVAS_WIDTH = 1920
 
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
+    const [toolSize, setToolSize] = useState<string>('sm')
     const [color, setColor] = useState<DrawingColor>(DrawingColor.Black)
 
     const stageRef = useRef<any>(null)
@@ -28,6 +29,10 @@ const Canvas = () => {
     /* change the drawing tool */
     const handleSelectTool = (tool: DrawingTool): void => {
       setTool(tool)
+    }
+
+    const handleSelectToolSize = (size: string): void => {
+      setToolSize(size)
     }
 
     /* change the color of drawing tool */

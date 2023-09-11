@@ -14,10 +14,11 @@ import SaveDialog from '../Dialogs/SaveDialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEraser } from '@fortawesome/free-solid-svg-icons';
 import { DrawingTool, DrawingColor } from '../../Types/types';
+import DrawingToolSizeContainer from '../DrawingToolSizeContainer/DrawingToolSizeContainer';
 
 
 /* props to handle methods from Canvas component */
-interface SelectToolProps {
+interface ToolBarProps {
     onSelectTool: (tool: DrawingTool) => void;
     onSelectColor: (color: DrawingColor) => void;
     onErase: () => void;
@@ -25,7 +26,7 @@ interface SelectToolProps {
     onUploadImg: (img: any) => void;
 }
 
-const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, onErase, onDownload, onUploadImg }: SelectToolProps) => {
+const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectColor, onErase, onDownload, onUploadImg }: ToolBarProps) => {
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
     const [color, setColor] = useState<string>(DrawingColor.Red)
 
@@ -35,12 +36,15 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
     const [drawingTitle, setDrawingTitle] = useState<string>('Untitled Drawing')
     const [hasSaved, setHasSaved] = useState<boolean>(false)
 
+    const [displaySizeContainer, setDisplaySizeContainer] = useState<boolean>(false)
+
     const fileInputRef = useRef<any>(null)
 
     /* change the drawing tool in both ToolBar and Canvas components */
     const handleToolChange = (tool: DrawingTool): void => {
         setTool(tool)
         onSelectTool(tool)
+        setDisplaySizeContainer(true)
     };
 
     /* change the drawing tool color in both ToolBar and Canvas components */
@@ -87,16 +91,20 @@ const SelectTool: React.FC<SelectToolProps> = ({ onSelectTool, onSelectColor, on
     };
 
   return (
-    <div className={`mt-4 mx-6 w-[${window.innerWidth}]`}>
+    <div className={`mt-10 mx-6 w-[${window.innerWidth}]`}>
         <div className='flex justify-between flex-wrap w-full sm:flex-nowrap'>
             <div className='flex'>
+                {
+                    displaySizeContainer && (
+                        <DrawingToolSizeContainer toolType={tool} />
+                    )
+                }
                 <div className='flex border-[1px] border-gray-300 rounded-md p-1 mr-2 mt-2 md:p-2'>
                     <CreateIcon
                         className={tool === DrawingTool.Pen ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
                          : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
                         fontSize='large'
                         onClick={() => handleToolChange(DrawingTool.Pen)} />
-                
                     <BrushIcon
                         className={tool === DrawingTool.Brush ? 'border-[1px] bg-black text-white border-gray-300 rounded-md mr-1 p-1 shadow-slate-900 shadow-lg'
                          : 'border-[1px] border-gray-300 rounded-sm mr-1 hover:cursor-pointer' }
