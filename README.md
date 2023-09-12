@@ -40,6 +40,7 @@ npm  start
  7. Responsive to various screen sizes (large, medium, mobile).
  8. Choose the size of drawing tool, ranging from (small, medium, large).
  9. Allows dragging and dropping using the Mover drawing tool.
+ 10. Save the drawings in the global state (App Content Provider) and recreate the existing drawings.
 
 ## Future features
 
