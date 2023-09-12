@@ -25,6 +25,7 @@ npm  start
  3. Material UI and MUI icons
  4. uuid
  5. TypeScript
+ 6. React Router
 
 > Note: I am using Tailwind CSS CDN instead of configuring Tailwind CLI.
 
