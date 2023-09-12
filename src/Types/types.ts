@@ -40,3 +40,18 @@ export enum DrawingColor {
   Blue = 'blue',
   Purple = 'purple'
 }
+
+export type Drawing = {
+  id: string
+  title: string
+  lines: LineInterface[]
+  rectangles: RectagleInterface[]
+  circles: CircleInterface[]
+}
+
+export type AppContentContextType = {
+  currentDrawing?: string
+  drawings: Drawing[]
+  saveDrawing: (drawing: Drawing) => void
+  findDrawingById: (id: string) => Drawing
+}

@@ -1,12 +1,22 @@
 import { useRef, useState, useEffect } from "react";
 import { Stage, Layer, Line, Rect, Circle, Image } from "react-konva";
 import ToolBar from "../../components/ToolBar/ToolBar";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import Button from '@mui/material/Button';
 import { KonvaEventObject } from "konva/lib/Node";
 import { v4 as uuidv4 } from 'uuid';
-import { LineInterface, RectagleInterface, CircleInterface, DrawingTool, DrawingColor } from '../../Types/types'
+import { LineInterface, RectagleInterface, CircleInterface, DrawingTool, DrawingColor, Drawing } from '../../Types/types'
+import { Navigate, useNavigate, useParams } from "react-router";
+import { useAppContentProvider } from "../../providers/AppContentProvider";
   
 const Canvas = () => {
     const CANVAS_WIDTH = 1920
+
+    const { drawingId } = useParams()
+    const navigate = useNavigate()
+    const { findDrawingById } = useAppContentProvider()
+
+    const [currentDrawing, setCurrentDrawing] = useState<Drawing>()
 
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
     const [toolSize, setToolSize] = useState<string>('sm')
@@ -25,6 +35,12 @@ const Canvas = () => {
 
     const [circles, setCircles] = useState<CircleInterface[]>([])
     const [newCircle, setNewCircle] = useState<CircleInterface[]>([])
+
+    /* find the drawing by id from global state and set the current drawing */
+    useEffect(() => {
+      const drawing: Drawing = findDrawingById(drawingId)
+      setCurrentDrawing(drawing)
+    }, [])
 
     /* change the drawing tool */
     const handleSelectTool = (tool: DrawingTool): void => {
@@ -311,6 +327,13 @@ const Canvas = () => {
 
   return (
     <div className={`w-[${CANVAS_WIDTH}]px`}>
+
+        <div className="ml-6 mb-12 mt-4 hover:cursor-pointer" onClick={() => navigate('/')}>
+          <Button variant="outlined" startIcon={<ArrowBackIcon />}>
+            Back
+          </Button>
+        </div>
+
         <ToolBar 
           onSelectTool={handleSelectTool} 
           onSelectColor={handleSelectColor}
