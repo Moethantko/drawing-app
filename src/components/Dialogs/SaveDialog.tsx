@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import Button from '@mui/material/Button';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -10,15 +10,14 @@ interface SaveDialogProps {
     openSaveDialog: boolean;
     setOpenSaveDialog: (open: boolean) => void;
     handleSaveDrawing: (title: string) => void;
-    drawingTitle: string;
 }
 
-const SaveDialog: React.FC<SaveDialogProps> = ({ openSaveDialog, drawingTitle, setOpenSaveDialog, handleSaveDrawing }: SaveDialogProps) => {
+const SaveDialog: React.FC<SaveDialogProps> = ({ openSaveDialog, setOpenSaveDialog, handleSaveDrawing }: SaveDialogProps) => {
 
-    const [drawingTitleText, setDrawingTitleText] = useState<string>(drawingTitle)
+    const [drawingTitleText, setDrawingTitleText] = useState<string>('Untitled Drawing')
 
-    const [titleCharCount, setTitleCharCount] = useState<number>(drawingTitle.length)
-    const CHARLIMIT = 50
+    const [titleCharCount, setTitleCharCount] = useState<number>(drawingTitleText.length)
+    const CHARLIMIT = 30
 
     /* handle drawing title change and limit title character count to no more than CHARLIMIT */
     const handleFileNameChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {

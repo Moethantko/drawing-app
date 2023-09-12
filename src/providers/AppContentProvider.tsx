@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState }  from 'react'
+import React, { createContext, useContext, useEffect, useState }  from 'react'
 import { AppContentContextType, Drawing } from '../Types/types'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -10,26 +10,22 @@ interface AppContentProps {
 
 export const AppContentProvider = ({ children }: AppContentProps) => {
     const [drawings, setDrawings] = useState<Drawing[]>([
-        { id: '1', title: 'Test Drawing 1', lines: [], rectangles: [], circles: [] }
+        { id: uuidv4(), title: 'Untitled Drawing', lines: [], rectangles: [], circles: [] }
     ])
 
-    const [currentDrawing, setCurrentDrawing] = useState<Drawing>()
-
-    const updateCurrentDrawing = (drawing: Drawing): void => {
-      setCurrentDrawing({...currentDrawing, ...drawing})
-    }
-
+    /* save the drawing by adding to the drawings array */
     const saveDrawing = (drawing: Drawing): void => {
       setDrawings([...drawings, drawing])
     }
 
+    /* find a drawing from drawings array by id and return the drawing if found */
     const findDrawingById = (id: string): Drawing => {
       return drawings.find(drawing => drawing.id === id) || null
     }
 
   return (
     <AppContentContext.Provider 
-    value={{ drawings, currentDrawing, updateCurrentDrawing, saveDrawing, findDrawingById }}>
+    value={{ drawings, saveDrawing, findDrawingById }}>
             { children }
     </AppContentContext.Provider>
   )

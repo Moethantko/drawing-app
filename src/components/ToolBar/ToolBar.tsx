@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useRef, useState } from 'react'
+import React, { ChangeEventHandler, useEffect, useRef, useState } from 'react'
 import Button from '@mui/material/Button';
 import CreateIcon from '@mui/icons-material/Create';
 import RectangleIcon from '@mui/icons-material/Rectangle';
@@ -20,29 +20,28 @@ import { useAppContentProvider } from '../../providers/AppContentProvider';
 
 /* props to handle methods from Canvas component */
 interface ToolBarProps {
+    title: string;
     onSelectTool: (tool: DrawingTool) => void;
     onSelectToolSize: (size: string) => void;
     onSelectColor: (color: DrawingColor) => void;
     onErase: () => void;
-    onDownload: (title: string) => void;
+    onSave: (title: string) => void;
+    onDownload: () => void;
     onUploadImg: (img: any) => void;
 }
 
-const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectToolSize, onSelectColor, onErase, onDownload, onUploadImg }: ToolBarProps) => {
+const SelectTool: React.FC<ToolBarProps> = ({ title, onSelectTool, onSelectToolSize, onSelectColor, onErase, onSave, onDownload, onUploadImg }: ToolBarProps) => {
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
-    const [color, setColor] = useState<string>(DrawingColor.Red)
+    const [color, setColor] = useState<string>(DrawingColor.Black)
 
     const [openEraseConfirmDialog, setOpenEraseConfirmDialog] = useState<boolean>(false)
     const [openSaveDialog, setOpenSaveDialog] = useState<boolean>(false)
-
-    const [drawingTitle, setDrawingTitle] = useState<string>('Untitled Drawing')
+    
     const [hasSaved, setHasSaved] = useState<boolean>(false)
 
     const [displaySizeContainer, setDisplaySizeContainer] = useState<boolean>(true)
 
     const fileInputRef = useRef<any>(null)
-
-    const { saveDrawing } = useAppContentProvider()
 
     /* change the drawing tool in both ToolBar and Canvas components */
     const handleToolChange = (tool: DrawingTool): void => {
@@ -65,14 +64,9 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectToolSize, on
 
     /* hypothetically save the drawing by giving the title to current drawing */
     const handleSaveDrawing = (title: string): void => {
-        setDrawingTitle(title)
         setHasSaved(true)
         setOpenSaveDialog(false)
-
-        const drawing: Drawing = {
-            id: uuidv4(), title
-        }
-        saveDrawing(drawing)
+        onSave(title)
     }
 
     /* click the hidden html file input */
@@ -188,7 +182,7 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectToolSize, on
                     accept=".png"  
                     ref={fileInputRef}
                     onChange={handleFileChange}/>
-                <div className='ml-2 mt-2' onClick={() => onDownload(drawingTitle)}>
+                <div className='ml-2 mt-2' onClick={onDownload}>
                     <Button variant="outlined" startIcon={<DownloadIcon />} style={{ paddingTop: 12, paddingBottom: 12 }}>
                         Download
                     </Button>
@@ -196,17 +190,12 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectToolSize, on
             </div>
         </div>
 
-        <div className='mt-6'>
-            <h3 className='font-jost font-semibold text-2xl p-1 w-1.3'>{ drawingTitle }</h3>
-        </div>
-
         <EraseConfirmDialog
             openEraseConfirmDialog={openEraseConfirmDialog}
             setOpenEraseConfirmDialog={setOpenEraseConfirmDialog}
             handleErase={handleErase} />
 
-         <SaveDialog 
-            drawingTitle={drawingTitle}
+         <SaveDialog
             openSaveDialog={openSaveDialog}
             setOpenSaveDialog={setOpenSaveDialog}
             handleSaveDrawing={handleSaveDrawing} />

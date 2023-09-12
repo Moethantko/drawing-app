@@ -12,12 +12,12 @@ import { useAppContentProvider } from "../../providers/AppContentProvider";
 const Canvas = () => {
     const CANVAS_WIDTH = 1920
 
-    const { drawingId } = useParams()
     const navigate = useNavigate()
-    const { findDrawingById, updateCurrentDrawing } = useAppContentProvider()
 
-    const [currentDrawing, setCurrentDrawing] = useState<Drawing>()
+    const { drawingId } = useParams()
+    const { findDrawingById, saveDrawing } = useAppContentProvider()
 
+    const [title, setTitle] = useState<string>('')
     const [tool, setTool] = useState<DrawingTool>(DrawingTool.Pen)
     const [toolSize, setToolSize] = useState<string>('sm')
     const [color, setColor] = useState<DrawingColor>(DrawingColor.Black)
@@ -39,7 +39,12 @@ const Canvas = () => {
     /* find the drawing by id from global state and set the current drawing */
     useEffect(() => {
       const drawing: Drawing = findDrawingById(drawingId)
-      setCurrentDrawing(drawing)
+
+      /* get existing drawings from the file */
+      setTitle(drawing.title)
+      setLines(drawing.lines || [])
+      setRectangles(drawing.rectangles || [])
+      setCircles(drawing.circles || [])
     }, [])
 
     /* change the drawing tool */
@@ -132,16 +137,26 @@ const Canvas = () => {
     }
 
     /* download the current drawing as png file */
-    const handleDownload = (drawingTitle: string): void => {
+    const handleDownload = (): void => {
       const dataURL = stageRef.current.toDataURL()
 
       const link = document.createElement('a')
       link.href = dataURL
-      link.download = `${drawingTitle}.png`
+      link.download = `${title}.png`
 
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+    }
+
+    /* save the drawing by calling saveDrawing method from App Content Provider */
+    const handleSaveDrawing = (drawingTitle: string): void => {
+      const drawing: Drawing = { 
+        id: uuidv4(), title: drawingTitle, lines, rectangles, circles
+      }
+
+      setTitle(drawingTitle) // set the title locally
+      saveDrawing(drawing) // save in App Content Provider
     }
 
     /* handle mouse down event depending on current drawing tool */
@@ -156,14 +171,7 @@ const Canvas = () => {
             const newPenLine: LineInterface = {
               id, tool, color, points: [x, y], toolSize,
             }
-
-            // const currentDrawing: Drawing = {
-            //   id, title: 'Test', lines,
-            // }
-
-            // setCurrentDrawing(currentDrawing)
             setLines([...lines, newPenLine])
-            
             break
 
           case DrawingTool.Brush:
@@ -342,13 +350,19 @@ const Canvas = () => {
         </div>
 
         <ToolBar 
+          title={title}
           onSelectTool={handleSelectTool} 
           onSelectColor={handleSelectColor}
           onErase={handleErase}
+          onSave={handleSaveDrawing}
           onDownload={handleDownload}
           onUploadImg={handleUploadImg}
           onSelectToolSize={handleSelectToolSize}
          />
+
+        <div className='mt-6 ml-6'>
+            <h3 className='font-jost font-semibold text-2xl p-1 w-full'>{ title }</h3>
+        </div>
 
         <Stage
           className='overflow-x-auto whitespace-nowrap mx-6 mt-6 shadow-inner shadow-2xl shadow-slate-400 rounded-lg'

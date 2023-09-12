@@ -50,9 +50,7 @@ export type Drawing = {
 }
 
 export type AppContentContextType = {
-  currentDrawing: Drawing
   drawings: Drawing[]
-  updateCurrentDrawing: (drawing: Drawing) => void
   saveDrawing: (drawing: Drawing) => void
   findDrawingById: (id: string) => Drawing
 }
