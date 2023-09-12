@@ -44,14 +44,15 @@ export enum DrawingColor {
 export type Drawing = {
   id: string
   title: string
-  lines: LineInterface[]
-  rectangles: RectagleInterface[]
-  circles: CircleInterface[]
+  lines?: LineInterface[]
+  rectangles?: RectagleInterface[]
+  circles?: CircleInterface[]
 }
 
 export type AppContentContextType = {
-  currentDrawing?: string
+  currentDrawing: Drawing
   drawings: Drawing[]
+  updateCurrentDrawing: (drawing: Drawing) => void
   saveDrawing: (drawing: Drawing) => void
   findDrawingById: (id: string) => Drawing
 }

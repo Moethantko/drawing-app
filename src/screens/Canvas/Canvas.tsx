@@ -14,7 +14,7 @@ const Canvas = () => {
 
     const { drawingId } = useParams()
     const navigate = useNavigate()
-    const { findDrawingById } = useAppContentProvider()
+    const { findDrawingById, updateCurrentDrawing } = useAppContentProvider()
 
     const [currentDrawing, setCurrentDrawing] = useState<Drawing>()
 
@@ -156,7 +156,14 @@ const Canvas = () => {
             const newPenLine: LineInterface = {
               id, tool, color, points: [x, y], toolSize,
             }
+
+            // const currentDrawing: Drawing = {
+            //   id, title: 'Test', lines,
+            // }
+
+            // setCurrentDrawing(currentDrawing)
             setLines([...lines, newPenLine])
+            
             break
 
           case DrawingTool.Brush:

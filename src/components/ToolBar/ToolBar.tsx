@@ -12,8 +12,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import BrushIcon from '@mui/icons-material/Brush';
 import EraseConfirmDialog from '../Dialogs/EraseConfirmDialog';
 import SaveDialog from '../Dialogs/SaveDialog';
-import { DrawingTool, DrawingColor } from '../../Types/types';
+import { v4 as uuidv4 } from 'uuid';
+import { DrawingTool, DrawingColor, Drawing } from '../../Types/types';
 import DrawingToolSizeContainer from '../DrawingToolSizeContainer/DrawingToolSizeContainer';
+import { useAppContentProvider } from '../../providers/AppContentProvider';
 
 
 /* props to handle methods from Canvas component */
@@ -40,6 +42,8 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectToolSize, on
 
     const fileInputRef = useRef<any>(null)
 
+    const { saveDrawing } = useAppContentProvider()
+
     /* change the drawing tool in both ToolBar and Canvas components */
     const handleToolChange = (tool: DrawingTool): void => {
         setTool(tool)
@@ -64,6 +68,11 @@ const SelectTool: React.FC<ToolBarProps> = ({ onSelectTool, onSelectToolSize, on
         setDrawingTitle(title)
         setHasSaved(true)
         setOpenSaveDialog(false)
+
+        const drawing: Drawing = {
+            id: uuidv4(), title
+        }
+        saveDrawing(drawing)
     }
 
     /* click the hidden html file input */

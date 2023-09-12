@@ -13,6 +13,12 @@ export const AppContentProvider = ({ children }: AppContentProps) => {
         { id: '1', title: 'Test Drawing 1', lines: [], rectangles: [], circles: [] }
     ])
 
+    const [currentDrawing, setCurrentDrawing] = useState<Drawing>()
+
+    const updateCurrentDrawing = (drawing: Drawing): void => {
+      setCurrentDrawing({...currentDrawing, ...drawing})
+    }
+
     const saveDrawing = (drawing: Drawing): void => {
       setDrawings([...drawings, drawing])
     }
@@ -23,7 +29,7 @@ export const AppContentProvider = ({ children }: AppContentProps) => {
 
   return (
     <AppContentContext.Provider 
-    value={{ drawings, saveDrawing, findDrawingById }}>
+    value={{ drawings, currentDrawing, updateCurrentDrawing, saveDrawing, findDrawingById }}>
             { children }
     </AppContentContext.Provider>
   )
